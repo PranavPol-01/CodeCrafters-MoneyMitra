@@ -88,7 +88,7 @@
 //           </SidebarGroupLabel>
 //           <SidebarGroupContent>
 //             <SidebarMenu>
-              
+
 //                 menuItems.map((item, index) => (
 //                   <SidebarMenuItem key={index}>
 //                     <SidebarMenuButton
@@ -105,7 +105,7 @@
 //                   </SidebarMenuItem>
 //                 ))
 //             </SidebarMenu>
-            
+
 //           </SidebarGroupContent>
 //         </SidebarGroup>
 //       </SidebarContent>
@@ -158,6 +158,7 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
+import path from "path";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -192,6 +193,16 @@ const Sidebar = () => {
       label: "Predict Market",
       icon: <Gamepad2 className="h-5 w-5" />,
       path: "/game/predict-market",
+    },
+    {
+      label: "Register",
+      icon: <Gamepad2 className="h-5 w-5" />,
+      path: "/register",
+    },
+    {
+      label: "Login",
+      icon: <Gamepad2 className="h-5 w-5" />,
+      path: "/login",
     },
   ];
 

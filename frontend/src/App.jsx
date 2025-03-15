@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import PaperTrading from "./Pages/Games/PaperTrading";
 import InvestmentQuiz from "./Pages/Games/InvestmentQuiz";
 import PredictMarket from "./Pages/Games/PredictMarket";
@@ -7,6 +12,8 @@ import SimulationPage from "./Pages/Simulation/SimulationPage";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import { SidebarProvider } from "@/components/ui/sidebar"; // Import Sidebar Provider
+import Register from "./Pages/Registration/Register";
+import Login from "./Pages/Registration/Login";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -15,7 +22,9 @@ const Layout = ({ children }) => {
   const showSidebar =
     location.pathname.startsWith("/game") ||
     location.pathname === "/simmulation" ||
-    location.pathname === "/";
+    location.pathname === "/" ||
+    location.pathname === "/login" ||
+    location.pathname === "/register";
 
   return (
     <SidebarProvider>
@@ -35,11 +44,13 @@ function App() {
     <Router>
       <Layout>
         <Routes>
+          <Route path="/register" element={<Register />} />
           <Route path="/" element={<DashboardPage />} />
           <Route path="/game/paper-trading" element={<PaperTrading />} />
           <Route path="/game/investment-quiz" element={<InvestmentQuiz />} />
           <Route path="/game/predict-market" element={<PredictMarket />} />
           <Route path="/simmulation" element={<SimulationPage />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </Layout>
     </Router>
