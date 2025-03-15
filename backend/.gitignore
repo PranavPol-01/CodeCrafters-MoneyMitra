@@ -17,7 +17,6 @@ config/config.json
 *.env
 *.DS_Store
 *.lock
-requirements.txt
 
 # 🚀 Redis
 dump.rdb
