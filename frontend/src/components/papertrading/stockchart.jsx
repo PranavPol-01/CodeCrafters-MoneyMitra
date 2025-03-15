@@ -1,18 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Button } from '@/components/ui/button';
-import { generateHistoricalData } from '@/utils/generatehistoricaldata';
+import { parse } from 'papaparse'; // For parsing CSV data
 
-const StockChart = ({ stock }) => {
+const StockChart = ({ stock, historicalData }) => {
   const [timeframe, setTimeframe] = useState('1M');
-  const [historicalData, setHistoricalData] = useState([]);
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    if (stock) {
-      const data = generateHistoricalData(timeframe, stock.price);
-      setHistoricalData(data);
+    if (historicalData) {
+      // Parse the CSV data
+      const parsedData = parse(historicalData, { header: true }).data;
+
+      // Transform the parsed data into the format required by the chart
+      const transformedData = parsedData.map((row) => ({
+        date: row.Date.split(' ')[0], // Extract date part only
+        price: parseFloat(row.Close), // Use the "Close" price for the chart
+      }));
+
+      // Filter data based on the selected timeframe
+      const filteredData = filterDataByTimeframe(transformedData, timeframe);
+      setChartData(filteredData);
     }
-  }, [stock, timeframe]);
+  }, [historicalData, timeframe]);
+
+  const filterDataByTimeframe = (data, timeframe) => {
+    const now = new Date();
+    let cutoffDate;
+
+    switch (timeframe) {
+      case '1D':
+        cutoffDate = new Date(now.setDate(now.getDate() - 1));
+        break;
+      case '1W':
+        cutoffDate = new Date(now.setDate(now.getDate() - 7));
+        break;
+      case '1M':
+        cutoffDate = new Date(now.setMonth(now.getMonth() - 1));
+        break;
+      case '3M':
+        cutoffDate = new Date(now.setMonth(now.getMonth() - 3));
+        break;
+      case '1Y':
+        cutoffDate = new Date(now.setFullYear(now.getFullYear() - 1));
+        break;
+      default:
+        cutoffDate = new Date(now.setMonth(now.getMonth() - 1));
+    }
+
+    return data.filter((item) => new Date(item.date) >= cutoffDate);
+  };
 
   if (!stock) {
     return (
@@ -41,7 +78,7 @@ const StockChart = ({ stock }) => {
       </div>
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={historicalData}>
+          <LineChart data={chartData}>
             <XAxis dataKey="date" />
             <YAxis domain={['auto', 'auto']} />
             <Tooltip />

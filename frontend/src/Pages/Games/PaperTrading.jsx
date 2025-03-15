@@ -1,15 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/papertrading/header';
 import StockList from '@/components/papertrading/stocklist';
 import StockChart from '@/components/papertrading/stockchart';
 import TradingInterface from '@/components/papertrading/tradinginterface';
 import Portfolio from '@/components/papertrading/portfolio';
-import { mockStocks } from '@/utils/mockdata';
 
 const PaperTrading = () => {
   const [selectedStock, setSelectedStock] = useState(null);
   const [portfolio, setPortfolio] = useState([]);
   const [balance, setBalance] = useState(100000);
+  const [stocks, setStocks] = useState([]); // List of tickers
+  const [historicalData, setHistoricalData] = useState(null); // Historical data for selected stock
+
+  // Fetch the list of tickers on component mount
+  useEffect(() => {
+    const fetchTickers = async () => {
+      try {
+        const response = await fetch('/api/stocks');
+        const data = await response.json();
+        setStocks(data.tickers);
+      } catch (error) {
+        console.error('Error fetching tickers:', error);
+      }
+    };
+
+    fetchTickers();
+  }, []);
+
+  // Fetch historical data when a stock is selected
+  useEffect(() => {
+    if (selectedStock) {
+      const fetchHistoricalData = async () => {
+        try {
+          const response = await fetch('/api/stock/historical', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ticker: selectedStock.symbol }),
+          });
+          const data = await response.json();
+          if (data.file_content) {
+            // Decode the Base64-encoded CSV content
+            const decodedData = atob(data.file_content);
+            setHistoricalData(decodedData);
+          }
+        } catch (error) {
+          console.error('Error fetching historical data:', error);
+        }
+      };
+
+      fetchHistoricalData();
+    }
+  }, [selectedStock]);
 
   const handleTrade = (symbol, action, quantity, price) => {
     const totalCost = quantity * price;
@@ -49,12 +92,12 @@ const PaperTrading = () => {
       <Header balance={balance} />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         <div className="lg:col-span-2">
-          <StockChart stock={selectedStock} />
+          <StockChart stock={selectedStock} historicalData={historicalData} />
           <TradingInterface stock={selectedStock} onTrade={handleTrade} />
         </div>
         <div className="lg:col-span-1">
-          <StockList stocks={mockStocks} onSelectStock={setSelectedStock} />
-          <Portfolio portfolio={portfolio} stocks={mockStocks} />
+          <StockList stocks={stocks} onSelectStock={setSelectedStock} />
+          <Portfolio portfolio={portfolio} stocks={stocks} />
         </div>
       </div>
     </div>
