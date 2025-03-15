@@ -6,12 +6,36 @@ import os
 CSV_FOLDER = "generated_csv"
 os.makedirs(CSV_FOLDER, exist_ok=True)  # Ensure the folder exists
 
+import yfinance as yf
+import pandas as pd
+import os
+from datetime import datetime
+
 class StockData:
     def __init__(self, ticker_symbol):
         """Initialize StockData with a properly formatted ticker."""
-        self.ticker_symbol = self.format_ticker(ticker_symbol)
+        self.ticker_symbol = ticker_symbol.upper()
         self.ticker = yf.Ticker(self.ticker_symbol)
 
+    def get_historical_data(self):
+        """Fetch and return historical stock data."""
+        try:
+            file_path = f"generated_csv/{self.ticker_symbol}_historical.csv"
+            if os.path.exists(file_path):
+                # Check if the file is up to date
+                file_date = datetime.fromtimestamp(os.path.getmtime(file_path)).date()
+                if file_date == datetime.today().date():
+                    return {"message": "Data is up to date", "file_path": file_path}
+
+            # Fetch new data
+            data = self.ticker.history(period="max")
+            data.reset_index(inplace=True)
+            data.to_csv(file_path, index=False)
+            return {"message": "CSV file generated successfully", "file_path": file_path}
+        except Exception as e:
+            return {"error": str(e)}
+
+    # Other methods remain the same...
     def format_ticker(self, ticker):
         """Ensure ticker is uppercase and ends with .NS if missing."""
         ticker = ticker.upper()
@@ -28,13 +52,6 @@ class StockData:
 
         return {"message": "CSV file generated successfully", "file_path": file_path}
 
-    def get_historical_data(self, start="2020-01-01", end="2023-10-01"):
-        """Fetch and return historical stock data."""
-        try:
-            data = yf.download(self.ticker_symbol, start=start, end=end).to_dict()
-            return self.save_to_csv(data, f"{self.ticker_symbol}_historical.csv")
-        except Exception as e:
-            return {"error": str(e)}
 
     def get_stock_info(self):
         """Fetch general stock information and save as CSV."""
