@@ -7,11 +7,20 @@ import pandas as pd
 class StockController:
     @staticmethod
     def get_available_tickers():
-        """Get a list of available ticker symbols from the static CSV file."""
+        """Get a list of available ticker symbols and company names from the static CSV file."""
         try:
+            # Read the CSV file
             df = read_csv("static/TickerList.csv")
-            tickers = df["SYMBOL"].tolist()
-            return jsonify({"tickers": tickers}), 200
+
+            # Extract SYMBOL and NAME OF COMPANY columns
+            tickers = df[["SYMBOL", "NAME OF COMPANY"]].rename(
+                columns={"SYMBOL": "symbol", "NAME OF COMPANY": "name"}
+            )
+
+            # Convert to a list of dictionaries
+            tickers_list = tickers.to_dict(orient="records")
+
+            return jsonify({"tickers": tickers_list}), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 

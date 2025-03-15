@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from controllers.stock_controller import StockController
-
+from models.stocks import StockData
 stock_routes = Blueprint("stock_routes", __name__)
 
 @stock_routes.route("/stocks", methods=["GET"])
@@ -13,6 +13,7 @@ def get_historical_data():
     """Fetch historical data for a given ticker symbol."""
     data = request.get_json()
     ticker = data.get("ticker")
+    print(ticker)
     return StockController.fetch_historical_data(ticker)
 
 @stock_routes.route("/stock/info/<ticker>", methods=["GET"])
@@ -49,3 +50,14 @@ def get_institutional_holders(ticker):
 def get_sustainability(ticker):
     """Fetch sustainability data."""
     return StockController.fetch_sustainability(ticker)
+
+@stock_routes.route('/get_stock_prices', methods=['POST'])
+def get_stock_prices():
+    data = request.get_json()
+    stock_symbols = data.get('stock_symbols')
+
+    if not stock_symbols or not isinstance(stock_symbols, list):
+        return jsonify({"error": "Stock symbols must be provided as a list"}), 400
+
+    response, status_code = StockData.get_stock_prices(stock_symbols)
+    return jsonify(response), status_code

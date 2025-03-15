@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from controllers.authcontroller import register_user, login_user
-
+from models.user import User
 auth_routes = Blueprint('auth_routes', __name__)
 
 @auth_routes.route('/register', methods=['POST'])
