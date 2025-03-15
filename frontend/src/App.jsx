@@ -1,28 +1,47 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import PaperTrading from "./Pages/Games/PaperTrading";
 import InvestmentQuiz from "./Pages/Games/InvestmentQuiz";
 import PredictMarket from "./Pages/Games/PredictMarket";
 import DashboardPage from "./Pages/Dashboard/DashboardPage";
 import SimulationPage from "./Pages/Simulation/SimulationPage";
+import PortfolioPage from "./Pages/Portfolio/PortfolioPage";
+// import LoginPage from "./Pages/Auth/LoginPage";
+// import SignupPage from "./Pages/Auth/SignupPage";
+// import LandingPage from "./Pages/LandingPage";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import { SidebarProvider } from "@/components/ui/sidebar"; // Import Sidebar Provider
+import BudgetPage from "./Pages/Budget/BudgetPage";
+import Register from "./Pages/Registration/Register";
+import Login from "./Pages/Registration/Login";
 
 const Layout = ({ children }) => {
   const location = useLocation();
 
-  // Show Sidebar for dashboard, games, and simulation pages
+  // Show Sidebar for specific routes
   const showSidebar =
     location.pathname.startsWith("/game") ||
     location.pathname === "/simmulation" ||
-    location.pathname === "/";
+    location.pathname === "/portfolio" ||
+    location.pathname === "/dashboard";
+
+  // Show Navbar only on Landing, Login, and Signup pages
+  const showNavbar =
+    location.pathname === "/" ||
+    location.pathname === "/login" ||
+    location.pathname === "/register";
 
   return (
     <SidebarProvider>
       <div className="flex w-full h-screen">
         {showSidebar && <Sidebar className="w-64" />}
         <div className="flex flex-col flex-grow">
-          {/* <Navbar /> */}
+          {showNavbar && <Navbar />} {/* Navbar only for landing, login, signup */}
           <div className="p-4">{children}</div>
         </div>
       </div>
@@ -35,11 +54,15 @@ function App() {
     <Router>
       <Layout>
         <Routes>
+          <Route path="/register" element={<Register />} />
           <Route path="/" element={<DashboardPage />} />
           <Route path="/game/paper-trading" element={<PaperTrading />} />
           <Route path="/game/investment-quiz" element={<InvestmentQuiz />} />
           <Route path="/game/predict-market" element={<PredictMarket />} />
           <Route path="/simmulation" element={<SimulationPage />} />
+          <Route path="/portfolio" element={<PortfolioPage />} />
+          <Route path="/budget" element={<BudgetPage/>} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </Layout>
     </Router>
