@@ -24,7 +24,6 @@ import DriveFilesViewer from "./Pages/PDF/pdf";
 import Home from "./components/home/home";
 import ReportsPage from "./Pages/Report/ReportPage";
 
-import DriveFilesViewer from "./Pages/PDF/pdf";
 
 const Layout = ({ children }) => {
   const location = useLocation();
