@@ -33,26 +33,67 @@ const Sidebar = () => {
   const username = sessionStorage.getItem("username");
   const email = sessionStorage.getItem("email");
 
-
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
   };
 
   const menuItems = [
-    { label: "Dashboard", icon: <Home className="h-5 w-5" />, path: "/dashboard" },
-    { label: "Simulation", icon: <BarChart className="h-5 w-5" />, path: "/simulation" },
-    { label: "Paper Trading", icon: <Gamepad2 className="h-5 w-5" />, path: "/game/paper-trading" },
-    { label: "Investment Quiz", icon: <ClipboardList className="h-5 w-5" />, path: "/game/investment-quiz" },
-    { label: "Predict Market", icon: <Gamepad2 className="h-5 w-5" />, path: "/game/predict-market" },
-    { label: "Portfolio", icon: <Briefcase className="h-5 w-5" />, path: "/portfolio" },
-    { label: "Budget", icon: <BarChart className="h-5 w-5" />, path: "/budget" }, 
-    { label: "Reports", icon: <ClipboardList className="h-5 w-5" />, path: "/report" },
-    { label: "Settings", icon: <Settings className="h-5 w-5" />, path: "/settings" },
-    { label: "Help & Support", icon: <HelpCircle className="h-5 w-5" />, path: "/help" },
-    { label: "Register", icon: <User className="h-5 w-5" />, path: "/register" },
-    { label: "Login", icon: <User className="h-5 w-5" />, path: "/login" },
+    {
+      label: "Dashboard",
+      icon: <Home className="h-5 w-5" />,
+      path: "/dashboard",
+    },
+    {
+      label: "Simulation",
+      icon: <BarChart className="h-5 w-5" />,
+      path: "/simulation",
+    },
+    {
+      label: "Paper Trading",
+      icon: <Gamepad2 className="h-5 w-5" />,
+      path: "/game/paper-trading",
+    },
+    {
+      label: "Investment Quiz",
+      icon: <ClipboardList className="h-5 w-5" />,
+      path: "/game/investment-quiz",
+    },
+    {
+      label: "Predict Market",
+      icon: <Gamepad2 className="h-5 w-5" />,
+      path: "/game/predict-market",
+    },
+    {
+      label: "Portfolio",
+      icon: <Briefcase className="h-5 w-5" />,
+      path: "/portfolio",
+    },
+    {
+      label: "Budget",
+      icon: <BarChart className="h-5 w-5" />,
+      path: "/budget",
+    },
+    {
+      label: "Reports",
+      icon: <ClipboardList className="h-5 w-5" />,
+      path: "/report",
+    },
+    {
+      label: "Settings",
+      icon: <Settings className="h-5 w-5" />,
+      path: "/settings",
+    },
+    {
+      label: "Help & Support",
+      icon: <HelpCircle className="h-5 w-5" />,
+      path: "/help",
+    },
+    {
+      label: "Money Tracker",
+      icon: <User className="h-5 w-5" />,
+      path: "/tracker",
+    },
   ];
-  
 
   return (
     <div
@@ -63,16 +104,28 @@ const Sidebar = () => {
       {/* Sidebar Header */}
       <SidebarHeader className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
-        <Link to="/">
-          <div className="flex items-center gap-2">
-            <Home className="h-6 w-6" />
-            {!isCollapsed && <span className="text-lg font-bold">Mani Mitra</span>}
-            
-          </div>
-        </Link>
-        <button onClick={toggleCollapse} className="p-2 hover:bg-muted rounded">
-          {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
-        </button>
+          <Link to="/">
+            <div className="flex items-center gap-2">
+              <img
+                src="/logo.svg"
+                alt="Moneyमित्र Logo"
+                className="h-10 w-10"
+              />
+              {!isCollapsed && (
+                <span className="text-lg font-bold">Money Mitra</span>
+              )}
+            </div>
+          </Link>
+          <button
+            onClick={toggleCollapse}
+            className="p-2 hover:bg-muted rounded"
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-5 w-5" />
+            ) : (
+              <ChevronLeft className="h-5 w-5" />
+            )}
+          </button>
         </div>
       </SidebarHeader>
 
@@ -81,7 +134,9 @@ const Sidebar = () => {
       {/* Sidebar Content */}
       <SidebarContent className="flex-1 overflow-y-auto">
         <SidebarGroup>
-          <SidebarGroupLabel className={isCollapsed ? "hidden" : ""}>Main Menu</SidebarGroupLabel>
+          <SidebarGroupLabel className={isCollapsed ? "hidden" : ""}>
+            Main Menu
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item, index) => (

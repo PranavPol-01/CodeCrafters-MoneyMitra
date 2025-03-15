@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Database } from "lucide-react";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const userRole = sessionStorage.getItem("role");
+  const userId = sessionStorage.getItem("uid");
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    sessionStorage.removeItem("role");
+    sessionStorage.removeItem("uid");
     navigate("/login");
   };
 
@@ -17,7 +16,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-800 text-white p-4 w-full float-start left-0 shadow-lg">
+    <nav className="bg-gray-800 text-white p-4 w-full shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <div className="flex items-center gap-3 text-2xl font-bold transition-all duration-300 hover:text-gray-400">
@@ -37,44 +36,6 @@ const Navbar = () => {
           >
             Home
           </Link>
-          {userRole === "User" && (
-            <>
-              <Link
-                to="/landowner"
-                className="text-white transition duration-200 hover:text-gray-300"
-              >
-                Dashboard
-              </Link>
-              <Link
-                to="/landowner/properties"
-                className="text-white transition duration-200 hover:text-gray-300"
-              >
-                Properties
-              </Link>
-              <Link
-                to="/landowner/myproperty"
-                className="text-white transition duration-200 hover:text-gray-300"
-              >
-                My Properties
-              </Link>
-            </>
-          )}
-          {userRole === "Register Officer" && (
-            <>
-              <Link
-                to="/gov"
-                className="text-white transition duration-200 hover:text-gray-300"
-              >
-                Government Dashboard
-              </Link>
-              <Link
-                to="/gov/verify-properties"
-                className="text-white transition duration-200 hover:text-gray-300"
-              >
-                Verify Properties
-              </Link>
-            </>
-          )}
           <Link
             to="/help"
             className="text-white transition duration-200 hover:text-gray-300"
@@ -83,12 +44,18 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Profile and Logout */}
+        {/* Profile and Logout / Login & Signup */}
         <div className="flex items-center space-x-4">
-          {userRole && (
+          {userId ? (
             <>
               <Link
-                to="/ledger"
+                to="/dashboard"
+                className="text-white transition duration-200 hover:text-gray-300 border-2 border-white py-2 px-4 rounded-md hover:bg-gray-700 transform transition-all duration-300"
+              >
+                Dashboard
+              </Link>
+              <Link
+                to="/profile"
                 className="text-white transition duration-200 hover:text-gray-300 border-2 border-white py-2 px-4 rounded-md hover:bg-gray-700 transform transition-all duration-300"
               >
                 Profile
@@ -100,8 +67,7 @@ const Navbar = () => {
                 Logout
               </button>
             </>
-          )}
-          {!userRole && (
+          ) : (
             <>
               <Link
                 to="/login"
@@ -164,52 +130,20 @@ const Navbar = () => {
         >
           Home
         </Link>
-        {userRole === "User" && (
-          <>
-            <Link
-              to="/landowner"
-              className="block text-white transition duration-200 hover:text-gray-300"
-            >
-              Dashboard
-            </Link>
-            <Link
-              to="/landowner/properties"
-              className="block text-white transition duration-200 hover:text-gray-300"
-            >
-              Properties
-            </Link>
-            <Link
-              to="/landowner/myproperty"
-              className="block text-white transition duration-200 hover:text-gray-300"
-            >
-              My Properties
-            </Link>
-          </>
-        )}
-        {userRole === "Register Officer" && (
-          <>
-            <Link
-              to="/gov"
-              className="block text-white transition duration-200 hover:text-gray-300"
-            >
-              Government Dashboard
-            </Link>
-            <Link
-              to="/gov/verify-properties"
-              className="block text-white transition duration-200 hover:text-gray-300"
-            >
-              Verify Properties
-            </Link>
-          </>
-        )}
         <Link
           to="/help"
           className="block text-white transition duration-200 hover:text-gray-300"
         >
           Help & Support
         </Link>
-        {userRole && (
+        {userId ? (
           <>
+            <Link
+              to="/dashboard"
+              className="block text-white transition duration-200 hover:text-gray-300"
+            >
+              Dashboard
+            </Link>
             <Link
               to="/profile"
               className="block text-white transition duration-200 hover:text-gray-300"
@@ -223,8 +157,7 @@ const Navbar = () => {
               Logout
             </button>
           </>
-        )}
-        {!userRole && (
+        ) : (
           <>
             <Link
               to="/login"
