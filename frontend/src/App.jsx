@@ -1,20 +1,20 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import PaperTrading from "./Pages/Games/PaperTrading";
+import InvestmentQuiz from "./Pages/Games/InvestmentQuiz";
+import PredictMarket from "./Pages/Games/PredictMarket";
+// import Home from "./Home"; // Example home component
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      
-      <h1 class="text-3xl font-bold underline">
-    Hello world!
-  </h1>
-
-    </>
-  )
+    <Router>
+      <Routes>
+        {/* <Route path="/" element={<Home />} /> */}
+        <Route path="/game/paper-trading" element={<PaperTrading />} />
+        <Route path="/game/investment-quiz" element={<InvestmentQuiz />} />
+        <Route path="/game/predict-market" element={<PredictMarket />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
