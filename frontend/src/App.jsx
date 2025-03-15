@@ -22,6 +22,7 @@ import Login from "./Pages/Registration/Login";
 import DriveFilesViewer from "./Pages/PDF/pdf";
 
 import Home from "./components/home/home";
+import ReportsPage from "./Pages/Report/ReportPage";
 
 import DriveFilesViewer from "./Pages/PDF/pdf";
 
@@ -33,7 +34,10 @@ const Layout = ({ children }) => {
     location.pathname.startsWith("/game") ||
     location.pathname === "/simmulation" ||
     location.pathname === "/portfolio" ||
-    location.pathname === "/dashboard";
+    location.pathname === "/dashboard" ||
+    location.pathname === "/budget" ||
+    location.pathname === "/simulation" ||
+    location.pathname === "/report";
 
   // Show Navbar only on Landing, Login, and Signup pages
   const showNavbar =
@@ -48,7 +52,7 @@ const Layout = ({ children }) => {
         <div className="flex flex-col flex-grow">
           {showNavbar && <Navbar />}{" "}
           {/* Navbar only for landing, login, signup */}
-          <div className="">{children}</div>
+          <div className={showSidebar ? "p-4" : ""}>{children}</div> 
         </div>
       </div>
     </SidebarProvider>
@@ -70,7 +74,12 @@ function App() {
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/budget" element={<BudgetPage />} />
           <Route path="/login" element={<Login />} />
+
           <Route path="/lessons" element={<DriveFilesViewer />} />
+
+          <Route path="/report" element={<ReportsPage/>} />
+          <Route path="/simulation" element={<SimulationPage/>} />
+
         </Routes>
       </Layout>
     </Router>
