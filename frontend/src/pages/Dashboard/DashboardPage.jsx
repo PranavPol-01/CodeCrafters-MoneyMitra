@@ -42,7 +42,7 @@ const DashboardPage = () => {
       </div>
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         {/* Left Section: TradingView Market Overview (40% width) */}
-        <div className="w-full md:w-[40%]">
+        <div className="w-full md:w-[500px]">
           <TradingViewMarketOverview />
         </div>
 
