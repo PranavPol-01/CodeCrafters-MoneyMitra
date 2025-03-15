@@ -21,3 +21,4 @@ config/config.json
 # 🚀 Redis
 dump.rdb
 appendonly.aof
+.vercel
