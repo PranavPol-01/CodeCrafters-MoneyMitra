@@ -1,22 +1,47 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import PaperTrading from "./Pages/Games/PaperTrading";
 import InvestmentQuiz from "./Pages/Games/InvestmentQuiz";
 import PredictMarket from "./Pages/Games/PredictMarket";
 import DashboardPage from "./Pages/Dashboard/DashboardPage";
 import SimulationPage from "./Pages/Simulation/SimulationPage";
-// import Home from "./Home"; // Example home component
+import Sidebar from "./components/Sidebar";
+import Navbar from "./components/Navbar";
+import { SidebarProvider } from "@/components/ui/sidebar"; // Import Sidebar Provider
+
+const Layout = ({ children }) => {
+  const location = useLocation();
+
+  // Show Sidebar for dashboard, games, and simulation pages
+  const showSidebar =
+    location.pathname.startsWith("/game") ||
+    location.pathname === "/simmulation" ||
+    location.pathname === "/";
+
+  return (
+    <SidebarProvider>
+      <div className="flex w-full h-screen">
+        {showSidebar && <Sidebar className="w-64" />}
+        <div className="flex flex-col flex-grow">
+          {/* <Navbar /> */}
+          <div className="p-4">{children}</div>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+};
 
 function App() {
   return (
     <Router>
-      <Routes>
-        {/* <Route path="/" element={<Home />} /> */}
-        <Route path="/game/paper-trading" element={<PaperTrading />} />
-        <Route path="/game/investment-quiz" element={<InvestmentQuiz />} />
-        <Route path="/game/predict-market" element={<PredictMarket />} />
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/simmulation" element={<SimulationPage/>} />
-      </Routes>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/game/paper-trading" element={<PaperTrading />} />
+          <Route path="/game/investment-quiz" element={<InvestmentQuiz />} />
+          <Route path="/game/predict-market" element={<PredictMarket />} />
+          <Route path="/simmulation" element={<SimulationPage />} />
+        </Routes>
+      </Layout>
     </Router>
   );
 }
