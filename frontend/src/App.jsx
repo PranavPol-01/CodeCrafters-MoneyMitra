@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import PaperTrading from "./Pages/Games/PaperTrading";
 import InvestmentQuiz from "./Pages/Games/InvestmentQuiz";
 import PredictMarket from "./Pages/Games/PredictMarket";
@@ -12,6 +17,8 @@ import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import { SidebarProvider } from "@/components/ui/sidebar"; // Import Sidebar Provider
 import BudgetPage from "./Pages/Budget/BudgetPage";
+import Register from "./Pages/Registration/Register";
+import Login from "./Pages/Registration/Login";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -27,7 +34,7 @@ const Layout = ({ children }) => {
   const showNavbar =
     location.pathname === "/" ||
     location.pathname === "/login" ||
-    location.pathname === "/signup";
+    location.pathname === "/register";
 
   return (
     <SidebarProvider>
@@ -47,16 +54,15 @@ function App() {
     <Router>
       <Layout>
         <Routes>
-          {/* <Route path="/" element={<LandingPage />} /> */}
-          {/* <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} /> */}
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<DashboardPage />} />
           <Route path="/game/paper-trading" element={<PaperTrading />} />
           <Route path="/game/investment-quiz" element={<InvestmentQuiz />} />
           <Route path="/game/predict-market" element={<PredictMarket />} />
           <Route path="/simmulation" element={<SimulationPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/budget" element={<BudgetPage/>} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </Layout>
     </Router>

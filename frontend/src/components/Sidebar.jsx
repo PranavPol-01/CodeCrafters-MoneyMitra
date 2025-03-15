@@ -25,10 +25,14 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
+import path from "path";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
+  const username = sessionStorage.getItem("username");
+  const email = sessionStorage.getItem("email");
+
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -43,6 +47,17 @@ const Sidebar = () => {
     { label: "Portfolio", icon: <Briefcase className="h-5 w-5" />, path: "/portfolio" },
     { label: "Settings", icon: <Settings className="h-5 w-5" />, path: "/settings" },
     { label: "Help & Support", icon: <HelpCircle className="h-5 w-5" />, path: "/help" },
+    
+    {
+      label: "Register",
+      icon: <Gamepad2 className="h-5 w-5" />,
+      path: "/register",
+    },
+    {
+      label: "Login",
+      icon: <Gamepad2 className="h-5 w-5" />,
+      path: "/login",
+    },
   ];
 
   return (
@@ -104,8 +119,14 @@ const Sidebar = () => {
           </div>
           {!isCollapsed && (
             <div className="flex flex-col">
-              <span className="text-sm font-medium">John Doe</span>
-              <span className="text-xs text-muted-foreground">john.doe@example.com</span>
+              {username ? (
+                <>
+                  <span className="text-sm font-medium">{username}</span>
+                  <span className="text-xs text-muted-foreground">{email}</span>
+                </>
+              ) : (
+                <span className="text-sm text-muted-foreground">Guest</span>
+              )}
             </div>
           )}
         </div>
