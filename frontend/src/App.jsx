@@ -4,25 +4,37 @@ import InvestmentQuiz from "./Pages/Games/InvestmentQuiz";
 import PredictMarket from "./Pages/Games/PredictMarket";
 import DashboardPage from "./Pages/Dashboard/DashboardPage";
 import SimulationPage from "./Pages/Simulation/SimulationPage";
+import PortfolioPage from "./Pages/Portfolio/PortfolioPage";
+// import LoginPage from "./Pages/Auth/LoginPage";
+// import SignupPage from "./Pages/Auth/SignupPage";
+// import LandingPage from "./Pages/LandingPage";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import { SidebarProvider } from "@/components/ui/sidebar"; // Import Sidebar Provider
+import BudgetPage from "./Pages/Budget/BudgetPage";
 
 const Layout = ({ children }) => {
   const location = useLocation();
 
-  // Show Sidebar for dashboard, games, and simulation pages
+  // Show Sidebar for specific routes
   const showSidebar =
     location.pathname.startsWith("/game") ||
     location.pathname === "/simmulation" ||
-    location.pathname === "/";
+    location.pathname === "/portfolio" ||
+    location.pathname === "/dashboard";
+
+  // Show Navbar only on Landing, Login, and Signup pages
+  const showNavbar =
+    location.pathname === "/" ||
+    location.pathname === "/login" ||
+    location.pathname === "/signup";
 
   return (
     <SidebarProvider>
       <div className="flex w-full h-screen">
         {showSidebar && <Sidebar className="w-64" />}
         <div className="flex flex-col flex-grow">
-          {/* <Navbar /> */}
+          {showNavbar && <Navbar />} {/* Navbar only for landing, login, signup */}
           <div className="p-4">{children}</div>
         </div>
       </div>
@@ -35,11 +47,16 @@ function App() {
     <Router>
       <Layout>
         <Routes>
-          <Route path="/" element={<DashboardPage />} />
+          {/* <Route path="/" element={<LandingPage />} /> */}
+          {/* <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} /> */}
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/game/paper-trading" element={<PaperTrading />} />
           <Route path="/game/investment-quiz" element={<InvestmentQuiz />} />
           <Route path="/game/predict-market" element={<PredictMarket />} />
           <Route path="/simmulation" element={<SimulationPage />} />
+          <Route path="/portfolio" element={<PortfolioPage />} />
+          <Route path="/budget" element={<BudgetPage/>} />
         </Routes>
       </Layout>
     </Router>
