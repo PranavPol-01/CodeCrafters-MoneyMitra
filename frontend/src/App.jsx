@@ -19,6 +19,7 @@ import { SidebarProvider } from "@/components/ui/sidebar"; // Import Sidebar Pro
 import BudgetPage from "./Pages/Budget/BudgetPage";
 import Register from "./Pages/Registration/Register";
 import Login from "./Pages/Registration/Login";
+import Home from "./components/home/home";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -41,8 +42,9 @@ const Layout = ({ children }) => {
       <div className="flex w-full h-screen">
         {showSidebar && <Sidebar className="w-64" />}
         <div className="flex flex-col flex-grow">
-          {showNavbar && <Navbar />} {/* Navbar only for landing, login, signup */}
-          <div className="p-4">{children}</div>
+          {showNavbar && <Navbar />}{" "}
+          {/* Navbar only for landing, login, signup */}
+          <div className="">{children}</div>
         </div>
       </div>
     </SidebarProvider>
@@ -54,14 +56,15 @@ function App() {
     <Router>
       <Layout>
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/" element={<DashboardPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/game/paper-trading" element={<PaperTrading />} />
           <Route path="/game/investment-quiz" element={<InvestmentQuiz />} />
           <Route path="/game/predict-market" element={<PredictMarket />} />
           <Route path="/simmulation" element={<SimulationPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
-          <Route path="/budget" element={<BudgetPage/>} />
+          <Route path="/budget" element={<BudgetPage />} />
           <Route path="/login" element={<Login />} />
         </Routes>
       </Layout>
