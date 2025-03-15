@@ -19,7 +19,11 @@ import { SidebarProvider } from "@/components/ui/sidebar"; // Import Sidebar Pro
 import BudgetPage from "./Pages/Budget/BudgetPage";
 import Register from "./Pages/Registration/Register";
 import Login from "./Pages/Registration/Login";
+import DriveFilesViewer from "./Pages/PDF/pdf";
+
 import Home from "./components/home/home";
+
+import DriveFilesViewer from "./Pages/PDF/pdf";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -66,6 +70,7 @@ function App() {
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/budget" element={<BudgetPage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/lessons" element={<DriveFilesViewer />} />
         </Routes>
       </Layout>
     </Router>
