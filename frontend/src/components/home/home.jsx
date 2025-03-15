@@ -8,6 +8,10 @@ import {
   Brain,
   BarChart3,
   Users,
+  LineChart,
+  TrendingUp,
+  Gamepad,
+  Lock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Banner from "./Banner";
@@ -52,202 +56,185 @@ const LandingPage = () => {
         >
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Key Features
-              </h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Key Features</h2>
               <p className="text-muted-foreground max-w-[700px] mx-auto">
-                Our platform combines cutting-edge technology with user-friendly
-                interfaces to revolutionize land record management.
+                Our platform offers cutting-edge tools and AI-driven insights to enhance investment strategies and user experience.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="bg-background p-6 rounded-lg shadow-md border">
-                <Shield className="h-10 w-10 text-primary mb-4" />
-                <h3 className="text-xl font-bold mb-2">Tamper-Proof Records</h3>
+                <Gamepad className="h-10 w-10 text-primary mb-4" />
+                <h3 className="text-xl text-black font-bold mb-2">Gamified Learning</h3>
                 <p className="text-muted-foreground">
-                  Blockchain technology ensures all records are immutable and
-                  secure from unauthorized changes.
+                  Interactive simulations and challenges to help users master investment strategies in a fun way.
+                </p>
+              </div>
+
+              <div className="bg-background p-6 rounded-lg shadow-md border">
+                <LineChart className="h-10 w-10 text-primary mb-4" />
+                <h3 className="text-xl text-black font-bold mb-2">Real-Time Analytics</h3>
+                <p className="text-muted-foreground">
+                  AI-driven market analysis provides deep insights into trends and investment opportunities.
+                </p>
+              </div>
+
+              <div className="bg-background p-6 rounded-lg shadow-md border">
+                <Lock className="h-10 w-10 text-primary mb-4" />
+                <h3 className="text-xl text-black font-bold mb-2">Secure Transactions</h3>
+                <p className="text-muted-foreground">
+                  Advanced hashing techniques protect user passwords and sensitive financial data.
                 </p>
               </div>
 
               <div className="bg-background p-6 rounded-lg shadow-md border">
                 <FileCheck className="h-10 w-10 text-primary mb-4" />
-                <h3 className="text-xl font-bold mb-2">
-                  Automated Verification
-                </h3>
+                <h3 className="text-xl text-black font-bold mb-2">KYC Verification</h3>
                 <p className="text-muted-foreground">
-                  AI-powered verification processes authenticate documents and
-                  detect inconsistencies automatically.
+                  Seamless and secure Know Your Customer (KYC) authentication to prevent fraud.
                 </p>
               </div>
 
               <div className="bg-background p-6 rounded-lg shadow-md border">
-                <Map className="h-10 w-10 text-primary mb-4" />
-                <h3 className="text-xl font-bold mb-2">
-                  Geospatial Integration
-                </h3>
+                <TrendingUp className="h-10 w-10 text-primary mb-4" />
+                <h3 className="text-xl text-black font-bold mb-2">Paper Trading</h3>
                 <p className="text-muted-foreground">
-                  Seamless integration with mapping systems for accurate
-                  property boundary identification.
-                </p>
-              </div>
-
-              <div className="bg-background p-6 rounded-lg shadow-md border">
-                <Brain className="h-10 w-10 text-primary mb-4" />
-                <h3 className="text-xl font-bold mb-2">Smart Contracts</h3>
-                <p className="text-muted-foreground">
-                  Automated execution of property transfers and agreements
-                  through blockchain smart contracts.
+                  Risk-free simulated trading experience to practice investment strategies before committing real funds.
                 </p>
               </div>
 
               <div className="bg-background p-6 rounded-lg shadow-md border">
                 <BarChart3 className="h-10 w-10 text-primary mb-4" />
-                <h3 className="text-xl font-bold mb-2">Analytics Dashboard</h3>
+                <h3 className="text-xl text-black font-bold mb-2">Reports & Analytics</h3>
                 <p className="text-muted-foreground">
-                  Comprehensive data visualization and insights for better
-                  decision-making.
-                </p>
-              </div>
-
-              <div className="bg-background p-6 rounded-lg shadow-md border">
-                <Users className="h-10 w-10 text-primary mb-4" />
-                <h3 className="text-xl font-bold mb-2">
-                  Multi-Authority Access
-                </h3>
-                <p className="text-muted-foreground">
-                  Role-based access control for different government agencies
-                  and stakeholders.
+                  Comprehensive reports and AI-powered analytics for tracking investment performance and making informed decisions.
                 </p>
               </div>
             </div>
           </div>
+
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="py-20 bg-background">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-blue-400">
-                How It Works
-              </h2>
-              <p className="text-gray-400 max-w-[700px] mx-auto">
-                A simple and transparent process that ensures data integrity
-                throughout the land record management lifecycle.
-              </p>
-            </div>
+<section id="how-it-works" className="py-20 bg-background">
+  <div className="container mx-auto px-4">
+    <div className="text-center mb-16">
+      <h2 className="text-3xl md:text-4xl font-bold mb-4 text-blue-400">
+        How It Works
+      </h2>
+      <p className="text-gray-400 max-w-[700px] mx-auto">
+        A seamless and intelligent approach to stock market learning, trading, and analytics.
+      </p>
+    </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center text-center border border-blue-400 p-4 rounded-lg">
-                <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
-                  <span className="text-xl font-bold text-blue-400">1</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-blue-400">
-                  Data Collection
-                </h3>
-                <p className="text-gray-400">
-                  Legacy records are digitized and new transactions are entered
-                  through secure portals.
-                </p>
-              </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="flex flex-col items-center text-center border border-blue-400 p-4 rounded-lg">
+        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+          <span className="text-xl font-bold text-blue-400">1</span>
+        </div>
+        <h3 className="text-xl font-bold mb-2 text-blue-400">
+          Learn & Simulate
+        </h3>
+        <p className="text-gray-400">
+          Engage in gamified paper trading to practice investment strategies without real money.
+        </p>
+      </div>
 
-              <div className="flex flex-col items-center text-center border border-blue-400 p-4 rounded-lg">
-                <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
-                  <span className="text-xl font-bold text-blue-400">2</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-blue-400">
-                  Verification & Processing
-                </h3>
-                <p className="text-gray-400">
-                  AI algorithms cross-validate information and blockchain
-                  technology creates an immutable record.
-                </p>
-              </div>
+      <div className="flex flex-col items-center text-center border border-blue-400 p-4 rounded-lg">
+        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+          <span className="text-xl font-bold text-blue-400">2</span>
+        </div>
+        <h3 className="text-xl font-bold mb-2 text-blue-400">
+          AI-Powered Insights
+        </h3>
+        <p className="text-gray-400">
+          Get real-time analytics and AI-driven predictions to make informed investment decisions.
+        </p>
+      </div>
 
-              <div className="flex flex-col items-center text-center border border-blue-400 p-4 rounded-lg">
-                <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
-                  <span className="text-xl font-bold text-blue-400">3</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-blue-400">
-                  Secure Access
-                </h3>
-                <p className="text-gray-400">
-                  Authorized stakeholders can access and verify records through
-                  our secure platform.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+      <div className="flex flex-col items-center text-center border border-blue-400 p-4 rounded-lg">
+        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+          <span className="text-xl font-bold text-blue-400">3</span>
+        </div>
+        <h3 className="text-xl font-bold mb-2 text-blue-400">
+          Secure Transactions
+        </h3>
+        <p className="text-gray-400">
+          Execute trades with confidence using encrypted data, KYC verification, and secure reporting.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
 
-        {/* Technology Section */}
-        <section
-          id="technology"
-          className="py-20 bg-muted bg-gradient-to-b from-gray-800 to-gray-900"
-        >
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Our Technology
-              </h2>
-              <p className="text-muted-foreground max-w-[700px] mx-auto">
-                Built on a foundation of cutting-edge technologies to ensure
-                security, scalability, and ease of use.
-              </p>
-            </div>
+{/* Technology Section */}
+<section id="technology" className="py-20 bg-muted bg-gradient-to-b from-gray-800 to-gray-900">
+  <div className="container mx-auto px-4">
+    <div className="text-center mb-12">
+      <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+        Our Technology Stack
+      </h2>
+      <p className="text-muted-foreground max-w-[700px] mx-auto">
+        Leveraging modern tools to provide a seamless, secure, and efficient investment experience.
+      </p>
+    </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div className="space-y-4 border-2 pl-8 p-4 border-gray-700">
-                <h3 className="text-2xl font-bold">Blockchain Technology</h3>
-                <p className="text-muted-foreground">
-                  Our platform uses a permissioned blockchain network to create
-                  an immutable ledger of all land transactions and ownership
-                  changes. This ensures that records cannot be tampered with and
-                  provides a complete audit trail of all changes.
-                </p>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <ArrowRight className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Immutable record-keeping</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <ArrowRight className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Distributed consensus mechanism</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <ArrowRight className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Smart contract automation</span>
-                  </li>
-                </ul>
-              </div>
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {/* React */}
+      <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" 
+             alt="React" className="w-12 h-12 mb-2" />
+        <h3 className="text-lg font-semibold text-white">React</h3>
+      </div>
 
-              <div className="space-y-4 border-2 pl-8 p-4 border-gray-700">
-                <h3 className="text-2xl font-bold">Artificial Intelligence</h3>
-                <p className="text-muted-foreground">
-                  Advanced AI models power our verification systems, enabling
-                  automatic document processing, anomaly detection, and
-                  predictive analytics to identify potential issues before they
-                  become disputes.
-                </p>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <ArrowRight className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Automated document verification</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <ArrowRight className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Anomaly detection algorithms</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <ArrowRight className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Predictive dispute resolution</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
+      {/* Firebase */}
+      <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/37/Firebase_Logo.svg" 
+             alt="Firebase" className="w-12 h-12 mb-2" />
+        <h3 className="text-lg font-semibold text-white">Firebase</h3>
+      </div>
+
+      {/* Flask */}
+      <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Flask_logo.svg" 
+             alt="Flask" className="w-12 h-12 mb-2" />
+        <h3 className="text-lg font-semibold text-white">Flask</h3>
+      </div>
+
+      {/* Tailwind CSS */}
+      <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d5/Tailwind_CSS_Logo.svg" 
+             alt="Tailwind CSS" className="w-12 h-12 mb-2" />
+        <h3 className="text-lg font-semibold text-white">Tailwind CSS</h3>
+      </div>
+
+      {/* ShadCN */}
+      <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
+        <img src="https://avatars.githubusercontent.com/u/139761612?s=200&v=4" 
+             alt="ShadCN" className="w-12 h-12 mb-2 rounded-full" />
+        <h3 className="text-lg font-semibold text-white">ShadCN</h3>
+      </div>
+
+      {/* Vite */}
+      <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Vitejs-logo.svg" 
+             alt="Vite" className="w-12 h-12 mb-2" />
+        <h3 className="text-lg font-semibold text-white">Vite</h3>
+      </div>
+
+      {/* Empty Box 1 */}
+      <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
+        <h3 className="text-lg font-semibold text-white">Coming Soon</h3>
+      </div>
+
+      {/* Empty Box 2 */}
+      <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
+        <h3 className="text-lg font-semibold text-white">Coming Soon</h3>
+      </div>
+    </div>
+  </div>
+</section>
+
 
         {/* CTA Section */}
         <section className="py-20 bg-primary/10">
