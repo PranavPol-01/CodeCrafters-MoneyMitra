@@ -32,6 +32,7 @@ const Layout = ({ children }) => {
     location.pathname === "/portfolio" ||
     location.pathname === "/dashboard" ||
     location.pathname === "/budget" ||
+    location.pathname === "/simulation" ||
     location.pathname === "/report";
 
   // Show Navbar only on Landing, Login, and Signup pages
@@ -70,6 +71,7 @@ function App() {
           <Route path="/budget" element={<BudgetPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/report" element={<ReportsPage/>} />
+          <Route path="/simulation" element={<SimulationPage/>} />
         </Routes>
       </Layout>
     </Router>
