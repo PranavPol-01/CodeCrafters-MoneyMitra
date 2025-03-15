@@ -20,6 +20,7 @@ import BudgetPage from "./Pages/Budget/BudgetPage";
 import Register from "./Pages/Registration/Register";
 import Login from "./Pages/Registration/Login";
 import Home from "./components/home/home";
+import ReportsPage from "./Pages/Report/ReportPage";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -29,7 +30,9 @@ const Layout = ({ children }) => {
     location.pathname.startsWith("/game") ||
     location.pathname === "/simmulation" ||
     location.pathname === "/portfolio" ||
-    location.pathname === "/dashboard";
+    location.pathname === "/dashboard" ||
+    location.pathname === "/budget" ||
+    location.pathname === "/report";
 
   // Show Navbar only on Landing, Login, and Signup pages
   const showNavbar =
@@ -44,7 +47,7 @@ const Layout = ({ children }) => {
         <div className="flex flex-col flex-grow">
           {showNavbar && <Navbar />}{" "}
           {/* Navbar only for landing, login, signup */}
-          <div className="">{children}</div>
+          <div className={showSidebar ? "p-4" : ""}>{children}</div> 
         </div>
       </div>
     </SidebarProvider>
@@ -66,6 +69,7 @@ function App() {
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/budget" element={<BudgetPage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/report" element={<ReportsPage/>} />
         </Routes>
       </Layout>
     </Router>
