@@ -17,15 +17,15 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-800 text-white p-4 w-full fixed top-0 left-0 z-10 shadow-lg">
+    <nav className="bg-gray-800 text-white p-4 w-full float-start left-0 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
-        <div className="text-2xl font-bold transition-all duration-300 hover:text-gray-300">
-          <Link to="/">
-            <div className="flex items-center gap-2">
-              <Database className="h-6 w-6 text-blue-400" />
-              <span className="text-xl font-bold">DigiKshetra</span>
-            </div>
+        <div className="flex items-center gap-3 text-2xl font-bold transition-all duration-300 hover:text-gray-400">
+          <Link to="/" className="flex items-center gap-3">
+            <img src="/logo.svg" alt="Moneyमित्र Logo" className="h-10 w-10" />
+            <span className="text-xl font-extrabold text-blue-400">
+              Moneyमित्र
+            </span>
           </Link>
         </div>
 

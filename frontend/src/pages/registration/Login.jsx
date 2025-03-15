@@ -27,7 +27,7 @@ const Login = () => {
         sessionStorage.setItem("uid", data.user.uid);
 
         alert("Login successful!");
-        navigate("/");
+        navigate("/dashboard");
       } else {
         alert(data.message || "Invalid credentials!");
       }
