@@ -163,6 +163,9 @@ import path from "path";
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
+  const username = sessionStorage.getItem("username");
+  const email = sessionStorage.getItem("email");
+
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -273,10 +276,14 @@ const Sidebar = () => {
           </div>
           {!isCollapsed && (
             <div className="flex flex-col">
-              <span className="text-sm font-medium">John Doe</span>
-              <span className="text-xs text-muted-foreground">
-                john.doe@example.com
-              </span>
+              {username ? (
+                <>
+                  <span className="text-sm font-medium">{username}</span>
+                  <span className="text-xs text-muted-foreground">{email}</span>
+                </>
+              ) : (
+                <span className="text-sm text-muted-foreground">Guest</span>
+              )}
             </div>
           )}
         </div>
