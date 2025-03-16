@@ -1,21 +1,50 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line, PieChart, Pie, Cell } from "recharts";
+import { 
+  BarChart, Bar, XAxis, YAxis, Tooltip, Legend, 
+  PieChart, Pie, Cell, ResponsiveContainer, 
+  AreaChart, Area, CartesianGrid, LineChart, Line,
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
+} from "recharts";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowUp, ArrowDown, TrendingUp, Zap, Shield } from "lucide-react";
+import Overview from "./Overview";
+import Investments from "./Investment";
+import Budget from "./Budget";
 
 const PortfolioOverview = () => {
   const [bonds, setBonds] = useState([]);
   const [mutualFunds, setMutualFunds] = useState([]);
   const [sips, setSips] = useState([]);
   const [budget, setBudget] = useState({});
+  const [insights, setInsights] = useState([]);
+  const [tips, setTips] = useState([]);
+  const [loading, setLoading] = useState(true);
   const uid = sessionStorage.getItem("uid");
+
+  // Gemini API Key
+  const apiKey = "AIzaSyCRjmh5VKcCnANplEe3Vloz7SmR3mEwtnA";
 
   // Fetch all data
   useEffect(() => {
-    fetchBonds();
-    fetchMutualFunds();
-    fetchSips();
-    fetchBudget();
+    const fetchAllData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([
+          fetchBonds(),
+          fetchMutualFunds(),
+          fetchSips(),
+          fetchBudget()
+        ]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchAllData();
   }, []);
 
   const fetchBonds = async () => {
@@ -68,149 +97,267 @@ const PortfolioOverview = () => {
     }
   };
 
+  // Generate Insights and Tips using Gemini API
+  const generateInsights = async () => {
+    try {
+      // Construct the prompt
+      const prompt = `Analyze the following investment and stock data:
+  - Bonds: ${JSON.stringify(bonds)}
+  - Mutual Funds: ${JSON.stringify(mutualFunds)}
+  - SIPs: ${JSON.stringify(sips)}
+  - Budget: ${JSON.stringify(budget)}
+  
+  Generate 3 concise insights and 3 actionable tips to optimize the portfolio. Format the response as follows:
+  
+  **Insights:**
+  1. [Insight 1]
+  2. [Insight 2]
+  3. [Insight 3]
+  
+  **Tips:**
+  1. [Tip 1]
+  2. [Tip 2]
+  3. [Tip 3]`;
+  
+      // Send the prompt to the Gemini API
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt,
+                },
+              ],
+            },
+          ],
+        }),
+      });
+  
+      if (!response.ok) throw new Error("Failed to generate insights");
+  
+      // Parse the response
+      const data = await response.json();
+      const generatedText = data.candidates[0].content.parts[0].text;
+  
+      // Extract insights and tips from the response
+      const insightsMatch = generatedText.match(/\*\*Insights:\*\*\s*([\s\S]*?)\s*\*\*Tips:\*\*/);
+      const tipsMatch = generatedText.match(/\*\*Tips:\*\*\s*([\s\S]*)/);
+  
+      const insights = insightsMatch
+        ? insightsMatch[1]
+            .trim()
+            .split("\n")
+            .map((line) => line.replace(/^\d+\.\s*/, "").trim())
+        : [];
+      const tips = tipsMatch
+        ? tipsMatch[1]
+            .trim()
+            .split("\n")
+            .map((line) => line.replace(/^\d+\.\s*/, "").trim())
+        : [];
+  
+      // Update state with insights and tips
+      setInsights(insights);
+      setTips(tips);
+    } catch (error) {
+      console.error("Error generating insights:", error);
+    }
+  };
+
   // Data for graphs
-  const bondData = bonds.map((bond) => ({
-    name: bond.bondName,
-    value: parseFloat(bond.amount),
-  }));
+  const prepareData = () => {
+    // Asset Allocation Data
+    const totalBonds = bonds.reduce((sum, bond) => sum + parseFloat(bond.amount || 0), 0);
+    const totalMutualFunds = mutualFunds.reduce((sum, mf) => sum + parseFloat(mf.amount || 0), 0);
+    const totalSips = sips.reduce((sum, sip) => sum + parseFloat(sip.amount || 0), 0);
+    
+    const assetAllocationData = [
+      { name: "Bonds", value: totalBonds, color: "#4E79A7" },
+      { name: "Mutual Funds", value: totalMutualFunds, color: "#F28E2B" },
+      { name: "SIPs", value: totalSips, color: "#59A14F" }
+    ];
+    
+    // Bond Types Distribution
+    const bondTypesData = bonds.reduce((acc, bond) => {
+      const type = bond.bondType || "Unknown";
+      acc[type] = (acc[type] || 0) + parseFloat(bond.amount || 0);
+      return acc;
+    }, {});
+    
+    const bondTypesChartData = Object.entries(bondTypesData).map(([type, amount]) => ({
+      name: type,
+      value: amount
+    }));
+    
+    // Mutual Fund Types Distribution
+    const fundTypesData = mutualFunds.reduce((acc, fund) => {
+      const type = fund.fundType || "Unknown";
+      acc[type] = (acc[type] || 0) + parseFloat(fund.amount || 0);
+      return acc;
+    }, {});
+    
+    const fundTypesChartData = Object.entries(fundTypesData).map(([type, amount]) => ({
+      name: type,
+      value: amount
+    }));
+    
+    // Budget Utilization Data
+    const income = parseFloat(budget.income || 0);
+    const savings = parseFloat(budget.savings || 0);
+    const expenses = income - savings;
+    
+    const budgetUtilizationData = [
+      { name: "Income", value: income, color: "#4E79A7" },
+      { name: "Savings", value: savings, color: "#59A14F" },
+      { name: "Expenses", value: expenses, color: "#E15759" }
+    ];
+    
+    // Budget Allocation
+    const budgetAllocationData = [
+      { name: "Bonds", value: parseFloat(budget.bonds || 0), color: "#4E79A7" },
+      { name: "Crypto", value: parseFloat(budget.crypto || 0), color: "#F28E2B" },
+      { name: "Fixed Deposits", value: parseFloat(budget.fixedDeposits || 0), color: "#59A14F" },
+      { name: "Gold", value: parseFloat(budget.gold || 0), color: "#E15759" },
+      { name: "Mutual Funds", value: parseFloat(budget.mutualFunds || 0), color: "#76B7B2" },
+      { name: "Real Estate", value: parseFloat(budget.realEstate || 0), color: "#EDC948" },
+      { name: "Stocks", value: parseFloat(budget.stocks || 0), color: "#B07AA1" }
+    ].filter(item => item.value > 0);
+    
+    // Investment Distribution for Radar Chart
+    const investmentRadarData = [
+      { subject: "Bonds", A: totalBonds, fullMark: Math.max(totalBonds, totalMutualFunds, totalSips) * 1.2 },
+      { subject: "Mutual Funds", A: totalMutualFunds, fullMark: Math.max(totalBonds, totalMutualFunds, totalSips) * 1.2 },
+      { subject: "SIPs", A: totalSips, fullMark: Math.max(totalBonds, totalMutualFunds, totalSips) * 1.2 },
+      { subject: "Stocks", A: parseFloat(budget.stocks || 0), fullMark: Math.max(totalBonds, totalMutualFunds, totalSips) * 1.2 },
+      { subject: "Gold", A: parseFloat(budget.gold || 0), fullMark: Math.max(totalBonds, totalMutualFunds, totalSips) * 1.2 },
+      { subject: "Real Estate", A: parseFloat(budget.realEstate || 0), fullMark: Math.max(totalBonds, totalMutualFunds, totalSips) * 1.2 }
+    ];
+    
+    return {
+      assetAllocationData,
+      bondTypesChartData,
+      fundTypesChartData,
+      budgetUtilizationData,
+      budgetAllocationData,
+      investmentRadarData,
+      totalPortfolioValue: totalBonds + totalMutualFunds + totalSips
+    };
+  };
+  
+  const { 
+    assetAllocationData, 
+    bondTypesChartData, 
+    fundTypesChartData, 
+    budgetUtilizationData, 
+    budgetAllocationData,
+    investmentRadarData,
+    totalPortfolioValue
+  } = prepareData();
+  
+  // For pie charts
+  const COLORS = ["#4E79A7", "#F28E2B", "#59A14F", "#E15759", "#76B7B2", "#EDC948", "#B07AA1", "#FF9DA7"];
+  
+  // Custom tooltip for charts
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-2 border rounded shadow-md">
+          <p className="font-semibold">{`${label || payload[0].name}`}</p>
+          <p className="text-sm">{`Amount: ₹${payload[0].value.toFixed(2)}`}</p>
+          {payload[0].payload.percentage && (
+            <p className="text-sm">{`Percentage: ${payload[0].payload.percentage.toFixed(2)}%`}</p>
+          )}
+        </div>
+      );
+    }
+    return null;
+  };
 
-  const mutualFundData = mutualFunds.map((mf) => ({
-    name: mf.fundName,
-    value: parseFloat(mf.amount),
-  }));
+  // Custom PieChart label
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * Math.PI / 180);
+    const y = cy + radius * Math.sin(-midAngle * Math.PI / 180);
+  
+    return (
+      <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central">
+        {`${(percent * 100).toFixed(1)}%`}
+      </text>
+    );
+  };
 
-  const sipData = sips.map((sip) => ({
-    name: `SIP - ${sip.fundName}`,
-    value: parseFloat(sip.amount),
-  }));
-
-  // Asset Allocation Data
-  const assetAllocationData = [
-    { name: "Bonds", value: bonds.reduce((sum, bond) => sum + parseFloat(bond.amount), 0) },
-    { name: "Mutual Funds", value: mutualFunds.reduce((sum, mf) => sum + parseFloat(mf.amount), 0) },
-    { name: "SIPs", value: sips.reduce((sum, sip) => sum + parseFloat(sip.amount), 0) },
-  ];
-
-  // Budget Utilization Data
-  const budgetUtilizationData = [
-    { name: "Income", value: parseFloat(budget.income) },
-    { name: "Savings", value: parseFloat(budget.savings) },
-    { name: "Expenses", value: parseFloat(budget.income) - parseFloat(budget.savings) },
-  ];
-
-  // Total Portfolio Value
-  const totalPortfolioValue = assetAllocationData.reduce((sum, asset) => sum + asset.value, 0);
-
-  // Colors for black, white, and grey theme
-  const colors = ["#000000", "#4D4D4D", "#A6A6A6"];
-
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg font-medium">Loading portfolio data...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-4">
-      {/* Total Portfolio Value */}
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Total Portfolio Value</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <h3 className="text-2xl font-bold">₹{totalPortfolioValue.toFixed(2)}</h3>
-        </CardContent>
-      </Card>
-
-      {/* Asset Allocation Pie Chart */}
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Asset Allocation</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PieChart width={400} height={300}>
-            <Pie
-              data={assetAllocationData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              fill="#8884d8"
-              label
-            >
-              {assetAllocationData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </CardContent>
-      </Card>
-
-      {/* Budget Utilization Bar Chart */}
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Budget Utilization</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <BarChart width={400} height={300} data={budgetUtilizationData}>
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="value" fill="#808080" />
-          </BarChart>
-        </CardContent>
-      </Card>
-
-      {/* Statistical Tables */}
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Statistical Data</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Category</TableHead>
-                <TableHead>Total Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell>Bonds</TableCell>
-                <TableCell>₹{bonds.reduce((sum, bond) => sum + parseFloat(bond.amount), 0)}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Mutual Funds</TableCell>
-                <TableCell>₹{mutualFunds.reduce((sum, mf) => sum + parseFloat(mf.amount), 0)}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>SIPs</TableCell>
-                <TableCell>₹{sips.reduce((sum, sip) => sum + parseFloat(sip.amount), 0)}</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      {/* Budget Overview */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Budget Overview</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h3 className="text-lg font-semibold">Income</h3>
-              <p>₹{budget.income}</p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold">Savings</h3>
-              <p>₹{budget.savings}</p>
-            </div>
+    <div className="p-4 space-y-6">
+      {/* Header with Total Portfolio Value */}
+      <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 shadow-lg text-white">
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold">Portfolio Dashboard</h1>
+            <p className="text-blue-100">Financial summary and insights</p>
           </div>
-        </CardContent>
-      </Card>
+          <div className="mt-4 md:mt-0 text-center">
+            <p className="text-sm uppercase tracking-wider text-blue-100">Total Portfolio Value</p>
+            <h2 className="text-4xl font-bold">₹{totalPortfolioValue.toFixed(2)}</h2>
+          </div>
+        </div>
+      </div>
+  
+      {/* Dashboard Tabs */}
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid grid-cols-3 mb-6">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="investments">Investments</TabsTrigger>
+          <TabsTrigger value="budget">Budget</TabsTrigger>
+        </TabsList>
+        
+        {/* Overview Tab */}
+        <TabsContent value="overview" className="space-y-6">
+          <Overview 
+            bonds={bonds} 
+            mutualFunds={mutualFunds} 
+            sips={sips} 
+            assetAllocationData={assetAllocationData} 
+            investmentRadarData={investmentRadarData} 
+            generateInsights={generateInsights} 
+            insights={insights} 
+            tips={tips}
+          />
+        </TabsContent>
+        
+        {/* Investments Tab */}
+        <TabsContent value="investments" className="space-y-6">
+          <Investments 
+            bonds={bonds} 
+            mutualFunds={mutualFunds} 
+            sips={sips} 
+            fundTypesChartData={fundTypesChartData}
+          />
+        </TabsContent>
+        
+        {/* Budget Tab */}
+        <TabsContent value="budget" className="space-y-6">
+          <Budget 
+            budget={budget} 
+            budgetUtilizationData={budgetUtilizationData} 
+            budgetAllocationData={budgetAllocationData}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
-};
+}
 
 export default PortfolioOverview;
