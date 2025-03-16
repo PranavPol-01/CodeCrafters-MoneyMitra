@@ -1,8 +1,9 @@
 import React from "react";
 import "../AboutTaxes.css";
-
+import TaxBar from "../TaxBar";
 function FAQs() {
   return (
+     <><TaxBar/>
     <section className="blog-container">
       <div className="blog-header">
         <div className="blog-author">
@@ -265,6 +266,7 @@ function FAQs() {
         </div>
       </div>
     </section>
+    </>
   );
 }
 

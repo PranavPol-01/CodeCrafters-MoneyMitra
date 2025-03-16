@@ -51,27 +51,30 @@ const Layout = ({ children }) => {
     location.pathname === "/" ||
     location.pathname === "/login" ||
     location.pathname === "/register" ||
-    location.pathname === "/lessons";
+    location.pathname === "/lessons" ||
+    location.pathname === "/tax";
 
-  const showTaxBar =
-    location.pathname === "/tax" ||
-    location.pathname === "/tax/info" ||
-    location.pathname === "/tax/types" ||
-    location.pathname === "/tax/planning" ||
-    location.pathname === "/tax/savetax" ||
-    location.pathname === "/tax/itrfiling" ||
-    location.pathname === "/tax/notice";
+  // const showTaxBar =
+  //   location.pathname === "/tax" ||
+  //   location.pathname === "/tax/info" ||
+  //   location.pathname === "/tax/types" ||
+  //   location.pathname === "/tax/planning" ||
+  //   location.pathname === "/tax/savetax" ||
+  //   location.pathname === "/tax/itrfiling" ||
+  //   location.pathname === "/tax/notice";
   return (
     <SidebarProvider>
       <div className="flex w-full h-screen">
         {showSidebar && <Sidebar className="w-64" />}
-        {showTaxBar && <TaxBar />}{" "}
+        
 
         <div className="flex flex-col flex-grow">
           {showNavbar && <Navbar />}{" "}
+          
           {/* Navbar only for landing, login, signup */}
           <div className={showSidebar ? "p-4" : ""}>{children}</div>
         </div>
+        {/* {showTaxBar && <TaxBar />}{" "} */}
       </div>
     </SidebarProvider>
   );

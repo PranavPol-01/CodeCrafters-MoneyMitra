@@ -5,6 +5,12 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar, PieChart, Pie, Cell, Legend } from "recharts";
 
 const Budget = ({ budget, budgetUtilizationData, budgetAllocationData }) => {
+    // Calculate total expenses
+    const totalExpenses = budgetAllocationData.reduce((sum, item) => sum + item.value, 0);
+
+    // Calculate savings (Income - Total Expenses)
+    const savings = (budget.income || 0) - totalExpenses;
+
     // Custom label for PieChart
     const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
@@ -43,20 +49,33 @@ const Budget = ({ budget, budgetUtilizationData, budgetAllocationData }) => {
                     <CardDescription>Your income and expenses</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        {/* Total Income */}
                         <div className="bg-blue-100 p-4 rounded-lg">
                             <p className="text-sm text-gray-500">Total Income</p>
-                            <h3 className="text-2xl font-bold">₹{parseFloat(budget.income || 0).toFixed(2)}</h3>
+                            <h3 className="text-2xl font-bold">₹{parseInt(budget.income || 0).toFixed(2)}</h3>
                         </div>
+
+                        {/* Total Expenses */}
                         <div className="bg-blue-200 p-4 rounded-lg">
-                            <p className="text-sm text-gray-500">Total Savings</p>
-                            <h3 className="text-2xl font-bold">₹{parseFloat(budget.savings || 0).toFixed(2)}</h3>
+                            <p className="text-sm text-gray-500">Total Expenses</p>
+                            <h3 className="text-2xl font-bold">₹{totalExpenses.toFixed(2)}</h3>
                             <p className="text-xs mt-1">
-                                {budget.income ? ((budget.savings / budget.income) * 100).toFixed(1):0}% of income
+                                {budget.income ? ((totalExpenses / budget.income) * 100).toFixed(1) : 0}% of income
+                            </p>
+                        </div>
+
+                        {/* Total Savings */}
+                        <div className="bg-blue-300 p-4 rounded-lg">
+                            <p className="text-sm text-gray-500">Total Savings</p>
+                            <h3 className="text-2xl font-bold">₹{savings.toFixed(2)}</h3>
+                            <p className="text-xs mt-1">
+                                {budget.income ? ((savings / budget.income) * 100).toFixed(1) : 0}% of income
                             </p>
                         </div>
                     </div>
 
+                    {/* Bar Chart for Budget Utilization */}
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={budgetUtilizationData} barSize={40}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#D4E7F9" />
@@ -81,6 +100,7 @@ const Budget = ({ budget, budgetUtilizationData, budgetAllocationData }) => {
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Pie Chart for Budget Allocation */}
                         <ResponsiveContainer width="100%" height={300}>
                             <PieChart>
                                 <Pie
@@ -102,6 +122,7 @@ const Budget = ({ budget, budgetUtilizationData, budgetAllocationData }) => {
                             </PieChart>
                         </ResponsiveContainer>
 
+                        {/* Table for Budget Allocation */}
                         <Table>
                             <TableHeader>
                                 <TableRow>

@@ -2,10 +2,13 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import TaxBar from "../ITR/TaxBar";
 
 function AboutTaxes() {
 
   return (
+    <><TaxBar/>
+    
     <section className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       
       {/* Blog Header */}
@@ -140,6 +143,7 @@ function AboutTaxes() {
         <Button variant="outline">Next</Button>
       </div>
     </section>
+    </>
   );
 }
 

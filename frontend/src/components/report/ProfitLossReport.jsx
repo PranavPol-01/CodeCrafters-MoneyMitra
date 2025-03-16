@@ -45,6 +45,7 @@ export function ProfitLossReport() {
           throw new Error("Failed to fetch transactions");
         }
 
+
         const transactionsData = await transactionsResponse.json();
         setOriginalTransactions(transactionsData.transactions);
         setTransactions(transactionsData.transactions);
@@ -131,7 +132,6 @@ export function ProfitLossReport() {
           profit: asset.currentValue - asset.initialValue,
           change: ((asset.currentValue - asset.initialValue) / asset.initialValue * 100).toFixed(2) + "%",
         }));
-
         setAssetPerformance(assetPerformanceData);
       } catch (err) {
         console.error("Error fetching live stock prices:", err);
