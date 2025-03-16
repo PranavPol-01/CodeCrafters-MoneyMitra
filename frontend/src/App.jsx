@@ -12,20 +12,11 @@ import BudgetPage from "./Pages/Budget/BudgetPage";
 import Register from "./Pages/Registration/Register";
 import Login from "./Pages/Registration/Login";
 import DriveFilesViewer from "./Pages/PDF/pdf";
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 import { useLocation } from "react-router-dom";
-=======
 import MoneyTracker from "./components/moneyTracker/MoneyTracker";
->>>>>>> Stashed changes
 import Home from "./components/home/home";
 import ReportsPage from "./Pages/Report/ReportPage";
 import Savings from "./Pages/Saving/Saving";
-=======
-import MoneyTracker from "./components/moneyTracker/MoneyTracker";
-import Home from "./components/home/home";
-import ReportsPage from "./Pages/Report/ReportPage";
->>>>>>> Stashed changes
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -38,17 +29,9 @@ const Layout = ({ children }) => {
     location.pathname === "/dashboard" ||
     location.pathname === "/budget" ||
     location.pathname === "/simulation" ||
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    location.pathname === "/report"||
+    location.pathname === "/report" ||
     location.pathname === "/savings";
-=======
-=======
->>>>>>> Stashed changes
-    location.pathname === "/tracker" ||
-    location.pathname === "/report";
->>>>>>> Stashed changes
-
+  location.pathname === "/tracker" || location.pathname === "/report";
   // Show Navbar only on Landing, Login, and Signup pages
   const showNavbar =
     location.pathname === "/" ||
@@ -87,20 +70,14 @@ function App() {
           <Route path="/tracker" element={<MoneyTracker />} />
           <Route path="/lessons" element={<DriveFilesViewer />} />
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-          <Route path="/report" element={<ReportsPage/>} />
-          <Route path="/simulation" element={<SimulationPage/>} />
-          <Route path="/savings" element={<Savings/>} />
+          <Route path="/report" element={<ReportsPage />} />
+          <Route path="/simulation" element={<SimulationPage />} />
+          <Route path="/savings" element={<Savings />} />
 
-=======
           <Route path="/report" element={<ReportsPage />} />
           <Route path="/simulation" element={<SimulationPage />} />
->>>>>>> Stashed changes
-=======
           <Route path="/report" element={<ReportsPage />} />
           <Route path="/simulation" element={<SimulationPage />} />
->>>>>>> Stashed changes
         </Routes>
       </Layout>
     </Router>

@@ -43,10 +43,10 @@ const Login = () => {
         {/* Left Side - Login Form */}
         <div className="md:w-1/2 p-8 flex flex-col justify-center">
           <h1 className="text-3xl font-bold text-gray-800">
-            Welcome to DigiKshetra
+            Welcome to Money Mitra
           </h1>
           <p className="text-gray-600 mt-2">
-            Secure & Transparent Land Records Management
+            Optimize Your Investments with AI & Data Analytics
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
