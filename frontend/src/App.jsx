@@ -13,6 +13,7 @@ import Register from "./Pages/Registration/Register";
 import Login from "./Pages/Registration/Login";
 import DriveFilesViewer from "./Pages/PDF/pdf";
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { useLocation } from "react-router-dom";
 =======
 import MoneyTracker from "./components/moneyTracker/MoneyTracker";
@@ -20,6 +21,11 @@ import MoneyTracker from "./components/moneyTracker/MoneyTracker";
 import Home from "./components/home/home";
 import ReportsPage from "./Pages/Report/ReportPage";
 import Savings from "./Pages/Saving/Saving";
+=======
+import MoneyTracker from "./components/moneyTracker/MoneyTracker";
+import Home from "./components/home/home";
+import ReportsPage from "./Pages/Report/ReportPage";
+>>>>>>> Stashed changes
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -33,9 +39,12 @@ const Layout = ({ children }) => {
     location.pathname === "/budget" ||
     location.pathname === "/simulation" ||
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     location.pathname === "/report"||
     location.pathname === "/savings";
 =======
+=======
+>>>>>>> Stashed changes
     location.pathname === "/tracker" ||
     location.pathname === "/report";
 >>>>>>> Stashed changes
@@ -79,10 +88,15 @@ function App() {
           <Route path="/lessons" element={<DriveFilesViewer />} />
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           <Route path="/report" element={<ReportsPage/>} />
           <Route path="/simulation" element={<SimulationPage/>} />
           <Route path="/savings" element={<Savings/>} />
 
+=======
+          <Route path="/report" element={<ReportsPage />} />
+          <Route path="/simulation" element={<SimulationPage />} />
+>>>>>>> Stashed changes
 =======
           <Route path="/report" element={<ReportsPage />} />
           <Route path="/simulation" element={<SimulationPage />} />
