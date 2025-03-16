@@ -1,76 +1,86 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ExternalLink } from "lucide-react"
+import { useEffect, useState, useRef } from "react";
 
-const newsItems = [
-  {
-    id: "1",
-    title: "Federal Reserve Announces Interest Rate Decision",
-    description:
-      "The Federal Reserve has decided to maintain current interest rates, citing stable inflation and strong employment figures.",
-    source: "Financial Times",
-    time: "2 hours ago",
-    category: "Economy",
-    impact: "high",
-  },
-  {
-    id: "2",
-    title: "Tech Stocks Rally After Strong Earnings Reports",
-    description:
-      "Major tech companies exceeded earnings expectations, leading to a significant rally in the technology sector.",
-    source: "Wall Street Journal",
-    time: "5 hours ago",
-    category: "Stocks",
-    impact: "medium",
-  },
-  {
-    id: "3",
-    title: "New Regulations for Cryptocurrency Trading Announced",
-    description:
-      "Government officials have unveiled new regulatory framework for cryptocurrency trading, aiming to increase transparency.",
-    source: "Bloomberg",
-    time: "8 hours ago",
-    category: "Crypto",
-    impact: "high",
-  },
-  {
-    id: "4",
-    title: "Oil Prices Drop Amid Supply Chain Concerns",
-    description:
-      "Global oil prices have decreased by 3% following reports of potential disruptions in major supply chains.",
-    source: "Reuters",
-    time: "12 hours ago",
-    category: "Commodities",
-    impact: "medium",
-  },
-]
+const TradingViewWidget = () => {
+  const containerRef = useRef(null);
+  const scriptRef = useRef(null);
+  const [widgetKey, setWidgetKey] = useState(0);
 
-export default function MarketNews() {
+  // Function to load the TradingView script
+  const loadTradingViewScript = () => {
+    // Remove any existing script to prevent duplicates
+    if (scriptRef.current) {
+      scriptRef.current.remove();
+    }
+
+    // Create new script element
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-timeline.js";
+    script.async = true;
+    script.innerHTML = JSON.stringify({
+      feedMode: "all_symbols",
+      isTransparent: false,
+      displayMode: "regular",
+      width: "100%",
+      height: 550,
+      colorTheme: "light",
+      locale: "en"
+    });
+
+    // Add script to container
+    if (containerRef.current) {
+      containerRef.current.appendChild(script);
+      scriptRef.current = script;
+    }
+  };
+
+  // Initial load and handle window resize
+  useEffect(() => {
+    // Load script initially
+    loadTradingViewScript();
+
+    // Debounced resize handler
+    let resizeTimer;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        setWidgetKey(prev => prev + 1);
+      }, 300); // 300ms debounce
+    };
+    
+    window.addEventListener("resize", handleResize);
+    
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(resizeTimer);
+    };
+  }, []);
+
+  // When widgetKey changes, reload the script
+  useEffect(() => {
+    loadTradingViewScript();
+  }, [widgetKey]);
+
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {newsItems.map((item) => (
-        <Card key={item.id} className="flex flex-col">
-          <CardHeader className="pb-2">
-            <div className="flex justify-between items-start">
-              <Badge variant={item.impact === "high" ? "destructive" : "secondary"} className="mb-2">
-                {item.category}
-              </Badge>
-              <span className="text-xs text-muted-foreground">{item.time}</span>
-            </div>
-            <CardTitle className="text-base">{item.title}</CardTitle>
-            <CardDescription className="text-xs">{item.source}</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-grow">
-            <p className="text-sm">{item.description}</p>
-          </CardContent>
-          <CardFooter className="pt-2">
-            <Button variant="ghost" size="sm" className="ml-auto">
-              Read More <ExternalLink className="ml-1 h-3 w-3" />
-            </Button>
-          </CardFooter>
-        </Card>
-      ))}
+    <div className="w-full h-full">
+      <div key={widgetKey} className="tradingview-widget-container w-full">
+        <div 
+          className="tradingview-widget-container__widget w-full"
+          ref={containerRef}
+        ></div>
+        <div className="tradingview-widget-copyright text-center my-2">
+          {/* <a
+            href="https://www.tradingview.com/"
+            rel="noopener noreferrer nofollow"
+            target="_blank"
+            className="text-blue-500"
+          >
+            Track all markets on TradingView
+          </a> */}
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
+
+export default TradingViewWidget;
