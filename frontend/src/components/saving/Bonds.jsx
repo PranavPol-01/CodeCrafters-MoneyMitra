@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -20,51 +20,79 @@ const BondsForm = () => {
     taxStatus: "Taxable",
   });
 
+  const userId = sessionStorage.getItem("uid"); // Get user ID from session storage
+
+  // Fetch bonds when the component mounts
+  useEffect(() => {
+    fetchBonds();
+  }, []);
+
+  const fetchBonds = async () => {
+    try {
+      const response = await fetch(`/api/savings/getbonds/${userId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch bonds");
+      }
+      const data = await response.json();
+      setBonds(data);
+    } catch (error) {
+      console.error("Error fetching bonds:", error);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleAddBond = () => {
-    if (
-      !formData.amount ||
-      !formData.interestRate ||
-      !formData.maturityDate ||
-      !formData.bondName ||
-      !formData.purchaseDate ||
-      !formData.yieldToMaturity
-    ) {
-      alert("Please fill all required fields");
-      return;
+  const handleAddBond = async () => {
+    // Check if all required fields are filled
+    // const requiredFields = [
+    //   "amount",
+    //   "interestRate",
+    //   "maturityDate",
+    //   "bondName",
+    //   "purchaseDate",
+    //   "yieldToMaturity",
+    // ];
+
+    // const isFormValid = requiredFields.every((field) => formData[field].trim() !== "");
+
+    // if (!isFormValid) {
+    //   alert("Please fill all required fields.");
+    //   return;
+    // }
+
+    try {
+      const response = await fetch(`/api/savings/addbonds/${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add bond");
+      }
+
+      const newBond = await response.json();
+      setBonds([...bonds, newBond]); // Update the bonds state with the new bond
+      setFormData({
+        amount: "",
+        interestRate: "",
+        maturityDate: "",
+        bondName: "",
+        bondType: "Government",
+        couponFrequency: "Annual",
+        purchaseDate: "",
+        yieldToMaturity: "",
+        creditRating: "AAA",
+        taxStatus: "Taxable",
+      });
+    } catch (error) {
+      console.error("Error adding bond:", error);
     }
-
-    const newBond = {
-      id: bonds.length + 1,
-      amount: formData.amount,
-      interestRate: formData.interestRate,
-      maturityDate: formData.maturityDate,
-      bondName: formData.bondName,
-      bondType: formData.bondType,
-      couponFrequency: formData.couponFrequency,
-      purchaseDate: formData.purchaseDate,
-      yieldToMaturity: formData.yieldToMaturity,
-      creditRating: formData.creditRating,
-      taxStatus: formData.taxStatus,
-    };
-
-    setBonds([...bonds, newBond]);
-    setFormData({
-      amount: "",
-      interestRate: "",
-      maturityDate: "",
-      bondName: "",
-      bondType: "Government",
-      couponFrequency: "Annual",
-      purchaseDate: "",
-      yieldToMaturity: "",
-      creditRating: "AAA",
-      taxStatus: "Taxable",
-    });
   };
 
   return (
@@ -85,6 +113,7 @@ const BondsForm = () => {
                 value={formData.amount}
                 onChange={handleInputChange}
                 placeholder="Enter amount"
+                required
               />
             </div>
             <div>
@@ -96,6 +125,7 @@ const BondsForm = () => {
                 value={formData.interestRate}
                 onChange={handleInputChange}
                 placeholder="Enter interest rate"
+                required
               />
             </div>
             <div>
@@ -107,6 +137,7 @@ const BondsForm = () => {
                 value={formData.bondName}
                 onChange={handleInputChange}
                 placeholder="Enter bond name or issuer"
+                required
               />
             </div>
             <div>
@@ -117,6 +148,7 @@ const BondsForm = () => {
                 value={formData.bondType}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded"
+                required
               >
                 <option value="Government">Government Bond</option>
                 <option value="Corporate">Corporate Bond</option>
@@ -135,6 +167,7 @@ const BondsForm = () => {
                 value={formData.couponFrequency}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded"
+                required
               >
                 <option value="Monthly">Monthly</option>
                 <option value="Quarterly">Quarterly</option>
@@ -149,6 +182,7 @@ const BondsForm = () => {
                 name="purchaseDate"
                 value={formData.purchaseDate}
                 onChange={handleInputChange}
+                required
               />
             </div>
             <div>
@@ -160,6 +194,7 @@ const BondsForm = () => {
                 value={formData.yieldToMaturity}
                 onChange={handleInputChange}
                 placeholder="Enter YTM"
+                required
               />
             </div>
             <div>
@@ -170,6 +205,7 @@ const BondsForm = () => {
                 value={formData.creditRating}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded"
+                required
               >
                 <option value="AAA">AAA</option>
                 <option value="AA">AA</option>
@@ -186,6 +222,7 @@ const BondsForm = () => {
                 value={formData.taxStatus}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded"
+                required
               >
                 <option value="Taxable">Taxable</option>
                 <option value="Tax-Free">Tax-Free</option>

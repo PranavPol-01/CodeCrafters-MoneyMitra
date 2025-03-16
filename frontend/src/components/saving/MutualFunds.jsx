@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -17,12 +17,32 @@ const MutualFundsForm = () => {
     expenseRatio: "",
   });
 
+  const userId = sessionStorage.getItem("uid"); // Get user ID from session storage
+
+  // Fetch mutual funds when the component mounts
+  useEffect(() => {
+    fetchMutualFunds();
+  }, []);
+
+  const fetchMutualFunds = async () => {
+    try {
+      const response = await fetch(`/api/savings/getmf/${userId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch mutual funds");
+      }
+      const data = await response.json();
+      setMutualFunds(data);
+    } catch (error) {
+      console.error("Error fetching mutual funds:", error);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleAddMutualFund = () => {
+  const handleAddMutualFund = async () => {
     if (
       !formData.amount ||
       !formData.fundName ||
@@ -35,27 +55,33 @@ const MutualFundsForm = () => {
       return;
     }
 
-    const newMutualFund = {
-      id: mutualFunds.length + 1,
-      amount: formData.amount,
-      fundName: formData.fundName,
-      investmentDate: formData.investmentDate,
-      fundType: formData.fundType,
-      nav: formData.nav,
-      unitsPurchased: formData.unitsPurchased,
-      expenseRatio: formData.expenseRatio,
-    };
+    try {
+      const response = await fetch(`/api/savings/addmf/${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    setMutualFunds([...mutualFunds, newMutualFund]);
-    setFormData({
-      amount: "",
-      fundName: "",
-      investmentDate: "",
-      fundType: "Equity",
-      nav: "",
-      unitsPurchased: "",
-      expenseRatio: "",
-    });
+      if (!response.ok) {
+        throw new Error("Failed to add mutual fund");
+      }
+
+      const newMutualFund = await response.json();
+      setMutualFunds([...mutualFunds, newMutualFund]); // Update the state with the new mutual fund
+      setFormData({
+        amount: "",
+        fundName: "",
+        investmentDate: "",
+        fundType: "Equity",
+        nav: "",
+        unitsPurchased: "",
+        expenseRatio: "",
+      });
+    } catch (error) {
+      console.error("Error adding mutual fund:", error);
+    }
   };
 
   return (

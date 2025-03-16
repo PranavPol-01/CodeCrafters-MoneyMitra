@@ -5,9 +5,12 @@ from routes.auth_routes import auth_routes
 from routes.investment_routes import investment_bp
 from routes.transaction_routes import transaction_routes
 from routes.user_routes import user_routes
-import os
+from routes.saving_routes import savings_bp
 from routes.budget_routes import budget_bp
+
 from config.firebase import db
+
+import os
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -22,6 +25,7 @@ app.register_blueprint(transaction_routes)
 app.register_blueprint(stock_routes)
 app.register_blueprint(user_routes)
 app.register_blueprint(budget_bp)
+app.register_blueprint(savings_bp)
 
     
 if __name__ == '__main__':

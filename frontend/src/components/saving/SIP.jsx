@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const SIPForm = () => {
-  const [sips, setSips] = useState([]);
+  const [sips, setSips] = useState([]); // State to store SIPs as an array
+  const userId = sessionStorage.getItem("uid"); // Get the user ID from session storage
   const [formData, setFormData] = useState({
     amount: "",
     frequency: "Monthly",
@@ -14,27 +15,85 @@ const SIPForm = () => {
     duration: "",
   });
 
+  // Fetch SIPs when the component mounts
+  useEffect(() => {
+    const fetchSIPs = async () => {
+      try {
+        const response = await fetch(`/api/savings/getsip/${userId}`);
+        // console.log('spi ' ,response)
+        if (!response.ok) {
+          throw new Error("Failed to fetch SIPs");
+        }
+        const data = await response.json();
+
+        // Ensure data is an array, even if the API returns null or undefined
+        if (Array.isArray(data)) {
+          setSips(data);
+        } else {
+          console.error("Expected an array but got:", data);
+          setSips([]); // Fallback to an empty array
+        }
+      } catch (error) {
+        console.error("Error fetching SIPs:", error);
+      }
+    };
+
+    fetchSIPs();
+  }, [userId]);
+
+  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleAddSIP = () => {
+  // Handle form submission to add a new SIP
+  const handleAddSIP = async () => {
     if (!formData.amount || !formData.startDate || !formData.duration) {
       alert("Please fill all fields");
       return;
     }
 
     const newSIP = {
-      id: sips.length + 1,
       amount: formData.amount,
       frequency: formData.frequency,
       startDate: formData.startDate,
       duration: formData.duration,
     };
 
-    setSips([...sips, newSIP]);
-    setFormData({ amount: "", frequency: "Monthly", startDate: "", duration: "" });
+    try {
+      // Save the SIP to the backend
+      const response = await fetch(`/api/savings/addsip/${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newSIP),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add SIP");
+      }
+
+      // Update the local state with the new SIP
+      const addedSIP = await response.json();
+      setSips((prevSips) => {
+        if (Array.isArray(prevSips)) {
+          return [...prevSips, addedSIP];
+        } else {
+          console.error("sips is not an array:", prevSips);
+          return [addedSIP]; // Fallback to a new array with the added SIP
+        }
+      });
+
+      // Clear the form
+      setFormData({ amount: "", frequency: "Monthly", startDate: "", duration: "" });
+
+      alert("SIP added successfully!");
+    } catch (error) {
+      console.error("Error adding SIP:", error);
+      alert("Failed to add SIP. Please try again.");
+    }
   };
 
   return (
@@ -112,8 +171,8 @@ const SIPForm = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sips.map((sip) => (
-              <TableRow key={sip.id}>
+            {Array.isArray(sips) && sips.map((sip, index) => (
+              <TableRow key={index}>
                 <TableCell>₹{sip.amount}</TableCell>
                 <TableCell>{sip.frequency}</TableCell>
                 <TableCell>{sip.startDate}</TableCell>
