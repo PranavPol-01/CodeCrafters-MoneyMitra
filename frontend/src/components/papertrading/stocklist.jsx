@@ -5,20 +5,19 @@ import { ArrowUp, ArrowDown } from 'lucide-react';
 
 const StockList = ({ onSelectStock }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [stocks, setStocks] = useState([]); // State to store stocks from the server
-  const [loading, setLoading] = useState(true); // State to handle loading state
-  const [error, setError] = useState(null); // State to handle errors
+  const [stocks, setStocks] = useState([]); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetch stocks from the server on component mount
   useEffect(() => {
     const fetchStocks = async () => {
       try {
-        const response = await fetch('/api/stocks'); // Replace with your API endpoint
+        const response = await fetch('/api/stocks');
         if (!response.ok) {
           throw new Error('Failed to fetch stocks');
         }
         const data = await response.json();
-        setStocks(data.tickers); // Assuming the server returns { tickers: [...] }
+        setStocks(Array.isArray(data.tickers) ? data.tickers : []); // Ensure data.tickers is an array
         setLoading(false);
       } catch (error) {
         setError(error.message);
@@ -29,11 +28,10 @@ const StockList = ({ onSelectStock }) => {
     fetchStocks();
   }, []);
 
-  // Filter stocks based on search term
   const filteredStocks = stocks.filter(
     (stock) =>
-      stock.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      stock.name.toLowerCase().includes(searchTerm.toLowerCase())
+      (stock?.symbol || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (stock?.name || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
@@ -61,31 +59,37 @@ const StockList = ({ onSelectStock }) => {
         className="mb-4"
       />
       <ScrollArea className="h-96">
-        {filteredStocks.map((stock) => (
-          <div
-            key={stock.symbol}
-            className="p-2 hover:bg-gray-50 cursor-pointer"
-            onClick={() => onSelectStock(stock)}
-          >
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="font-medium">{stock.symbol}</p>
-                <p className="text-sm text-gray-500">{stock.name}</p>
-              </div>
-              {/* <div className="flex items-center gap-2">
-                <p className="font-medium">${stock.price.toFixed(2)}</p>
-                <div
-                  className={`flex items-center text-sm ${
-                    stock.change >= 0 ? 'text-green-600' : 'text-red-600'
-                  }`}
-                >
-                  {stock.change >= 0 ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
-                  {stock.changePercent.toFixed(2)}%
+        {filteredStocks.length > 0 ? (
+          filteredStocks.map((stock) => (
+            <div
+              key={stock?.symbol || Math.random()} // Use fallback key if symbol is missing
+              className="p-2 hover:bg-gray-50 cursor-pointer"
+              onClick={() => onSelectStock(stock)}
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-medium">{stock?.symbol || 'N/A'}</p>
+                  <p className="text-sm text-gray-500">{stock?.name || 'Unknown'}</p>
                 </div>
-              </div> */}
+                <div className="flex items-center gap-2">
+                  <p className="font-medium">
+                    ${stock?.price ? stock.price.toFixed(2) : '0.00'}
+                  </p>
+                  <div
+                    className={`flex items-center text-sm ${
+                      stock?.change >= 0 ? 'text-green-600' : 'text-red-600'
+                    }`}
+                  >
+                    {stock?.change >= 0 ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+                    {stock?.changePercent !== undefined ? stock.changePercent.toFixed(2) : '0.00'}%
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-center text-gray-500">No stocks found</p>
+        )}
       </ScrollArea>
     </div>
   );

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,7 @@ import {
   Tooltip, ResponsiveContainer
 } from 'recharts';
 
+
 const profitLossData = [
   { date: "2025-01-01", value: 20000 },
   { date: "2025-01-15", value: 20500 },
@@ -19,7 +20,7 @@ const profitLossData = [
   { date: "2025-02-15", value: 22500 },
   { date: "2025-03-01", value: 23800 },
   { date: "2025-03-15", value: 24685 },
-]
+];
 
 const assetPerformance = [
   {
@@ -94,85 +95,59 @@ const assetPerformance = [
     profit: -39.4,
     change: "-1.8%",
   },
-]
-
-const transactionHistory = [
-  {
-    id: "1",
-    date: "Mar 12, 2025",
-    type: "Buy",
-    asset: "Tesla Inc. (TSLA)",
-    amount: "$1,250.00",
-    shares: "5",
-    price: "$250.00",
-  },
-  {
-    id: "2",
-    date: "Mar 10, 2025",
-    type: "Sell",
-    asset: "Bitcoin (BTC)",
-    amount: "$3,400.00",
-    shares: "0.05",
-    price: "$68,000.00",
-  },
-  {
-    id: "3",
-    date: "Mar 8, 2025",
-    type: "Buy",
-    asset: "Apple Inc. (AAPL)",
-    amount: "$2,100.00",
-    shares: "12",
-    price: "$175.00",
-  },
-  {
-    id: "4",
-    date: "Mar 5, 2025",
-    type: "Buy",
-    asset: "S&P 500 ETF (SPY)",
-    amount: "$500.00",
-    shares: "2",
-    price: "$250.00",
-  },
-  {
-    id: "5",
-    date: "Mar 1, 2025",
-    type: "Buy",
-    asset: "Gold ETF (GLD)",
-    amount: "$750.00",
-    shares: "8",
-    price: "$93.75",
-  },
-  {
-    id: "6",
-    date: "Feb 25, 2025",
-    type: "Buy",
-    asset: "NVIDIA Corp. (NVDA)",
-    amount: "$1,600.00",
-    shares: "4",
-    price: "$400.00",
-  },
-  {
-    id: "7",
-    date: "Feb 20, 2025",
-    type: "Sell",
-    asset: "Meta Platforms (META)",
-    amount: "$950.00",
-    shares: "3",
-    price: "$316.67",
-  },
-  {
-    id: "8",
-    date: "Feb 15, 2025",
-    type: "Buy",
-    asset: "Bitcoin (BTC)",
-    amount: "$2,950.00",
-    shares: "0.05",
-    price: "$59,000.00",
-  },
-]
+];
 
 export function ProfitLossReport() {
   const [transactionTab, setTransactionTab] = useState('all');
+  const [transactionHistory, setTransactionHistory] = useState([]);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const userId = sessionStorage.getItem("uid");
+        if (!userId) {
+          console.error("User ID not found in session storage.");
+          return;
+        }
+  
+        // Fetch transactions from the API
+        const response = await fetch(`/api/transactions?uid=${userId}`);
+        console.log("API Response:", response);
+  
+        // Check if the response is OK (status code 200-299)
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+  
+        // Parse the response as JSON
+        const responseData = await response.json();
+        console.log("Response Data:", responseData);
+  
+        // Check if the response contains the expected data structure
+        if (!responseData || !Array.isArray(responseData.transactions)) {
+          throw new Error("Invalid response format: Expected 'transactions' array");
+        }
+  
+        // Format the transactions data
+        const formattedData = responseData.transactions.map((transaction) => ({
+          id: transaction.id || "N/A", // Add a fallback for missing ID
+          date: new Date(transaction.timestamp).toLocaleString(), // Full date & time format
+          type: transaction.type ? transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1) : "Unknown", // Handle missing type
+          asset: transaction.stock_symbol || "N/A", // Handle missing stock symbol
+          amount: `$${transaction.total_cost?.toFixed(2) || "0.00"}`, // Handle missing total cost
+          shares: transaction.quantity || 0, // Handle missing quantity
+          price: `$${transaction.price_per_share?.toFixed(2) || "0.00"}`, // Handle missing price per share
+        }));
+  
+        // Update the state with the formatted data
+        setTransactionHistory(formattedData);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
+  
+    fetchTransactions();
+  }, []);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -199,20 +174,20 @@ export function ProfitLossReport() {
               <AreaChart data={profitLossData}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis tickFormatter={(value) => `$${value.toLocaleString()}`} />
                 <Tooltip content={<CustomTooltip />} />
-                <Area 
-                  type="monotone" 
-                  dataKey="value" 
-                  stroke="hsl(var(--primary))" 
-                  fillOpacity={1} 
-                  fill="url(#colorValue)" 
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="hsl(var(--primary))"
+                  fillOpacity={1}
+                  fill="url(#colorValue)"
                   strokeWidth={2}
                 />
               </AreaChart>
@@ -283,9 +258,8 @@ export function ProfitLossReport() {
                     {asset.profit >= 0 ? "+" : ""}${asset.profit.toLocaleString()}
                   </TableCell>
                   <TableCell
-                    className={`text-right font-medium ${
-                      asset.change.startsWith("+") ? "text-emerald-500" : "text-rose-500"
-                    }`}
+                    className={`text-right font-medium ${asset.change.startsWith("+") ? "text-emerald-500" : "text-rose-500"
+                      }`}
                   >
                     {asset.change}
                   </TableCell>
@@ -409,5 +383,5 @@ export function ProfitLossReport() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

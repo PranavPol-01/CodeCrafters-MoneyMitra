@@ -18,6 +18,7 @@ import DriveFilesViewer from "./Pages/PDF/pdf";
 import { useLocation } from "react-router-dom";
 import Home from "./components/home/home";
 import ReportsPage from "./Pages/Report/ReportPage";
+import Savings from "./Pages/Saving/Saving";
 
 
 const Layout = ({ children }) => {
@@ -31,7 +32,8 @@ const Layout = ({ children }) => {
     location.pathname === "/dashboard" ||
     location.pathname === "/budget" ||
     location.pathname === "/simulation" ||
-    location.pathname === "/report";
+    location.pathname === "/report"||
+    location.pathname === "/savings";
 
   // Show Navbar only on Landing, Login, and Signup pages
   const showNavbar =
@@ -73,6 +75,7 @@ function App() {
 
           <Route path="/report" element={<ReportsPage/>} />
           <Route path="/simulation" element={<SimulationPage/>} />
+          <Route path="/savings" element={<Savings/>} />
 
         </Routes>
       </Layout>

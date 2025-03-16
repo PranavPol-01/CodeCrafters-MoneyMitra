@@ -6,6 +6,7 @@ from routes.investment_routes import investment_bp
 from routes.transaction_routes import transaction_routes
 from routes.user_routes import user_routes
 import os
+from routes.budget_routes import budget_bp
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
@@ -18,6 +19,7 @@ app.register_blueprint(investment_bp)
 app.register_blueprint(transaction_routes)
 app.register_blueprint(stock_routes)
 app.register_blueprint(user_routes)
+app.register_blueprint(budget_bp)
 
 
 if __name__ == '__main__':
