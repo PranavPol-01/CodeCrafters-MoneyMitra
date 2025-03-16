@@ -6,9 +6,12 @@ from routes.investment_routes import investment_bp
 # from routes.transaction_routes import transaction_routes
 from controllers.transaction_controller import transaction_blueprint
 from routes.user_routes import user_routes
-import os
+from routes.saving_routes import savings_bp
 from routes.budget_routes import budget_bp
+
 from config.firebase import db
+
+import os
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -23,8 +26,8 @@ app.register_blueprint(transaction_blueprint)
 app.register_blueprint(stock_routes)
 app.register_blueprint(user_routes)
 app.register_blueprint(budget_bp)
+app.register_blueprint(savings_bp)
 
-    
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Render provides PORT env variable
     app.run(host='0.0.0.0', port=port)
