@@ -25,6 +25,9 @@ import TradingViewMarketOverview from "@/components/dashboard/watchlistwidget";
 
 const DashboardPage = () => {
   const [walletBalance, setWalletBalance] = useState("Loading...");
+  const [portfolioValue, setPortfolioValue] = useState("Loading...");
+  // const [totalInvestments, setTotalInvestments] = useState("Loading...");
+  const [funds, setFunds] = useState("Loading...");
 
   useEffect(() => {
     // Retrieve userId from sessionStorage
@@ -32,29 +35,84 @@ const DashboardPage = () => {
     console.log("User ID from sessionStorage:", userId); // Debugging
     if (!userId) {
       setWalletBalance("User not found");
+      setPortfolioValue("User not found");
+      // setTotalInvestments("User not found");
+      setFunds("User not found");
       return;
     }
 
-    // Fetch wallet balance from the backend
+    // Fetch wallet balance
     const fetchWalletBalance = async () => {
       try {
         const response = await fetch(
           `http://127.0.0.1:5000/transactions/${userId}/wallet`
         );
-        console.log("Response:", response); // Debugging
+        console.log("Wallet Balance Response:", response); // Debugging
         if (!response.ok) {
           throw new Error("Failed to fetch wallet balance");
         }
         const data = await response.json();
         console.log("Wallet Balance Data:", data); // Debugging
-        setWalletBalance(`₹${data.wallet_balance.toFixed(2)}`);
+        setWalletBalance(`₹ ${data.wallet_balance.toFixed(2)}`);
       } catch (error) {
         console.error("Error fetching wallet balance:", error);
-        setWalletBalance("Error");
+        setWalletBalance("₹ 0");
       }
     };
 
+    // Fetch portfolio value and total investments
+    const fetchPortfolioAndInvestments = async () => {
+      try {
+        const response = await fetch(
+          `/api/holdings?uid=${userId}`
+        );
+        console.log("Holdings Response:", response); // Debugging
+        if (!response.ok) {
+          throw new Error("Failed to fetch holdings");
+        }
+        const data = await response.json();
+        console.log("Holdings Data:", data); // Debugging
+
+        // Calculate portfolio value (number of unique holdings)
+        const holdingsCount = Object.keys(data.holdings).length;
+        setPortfolioValue(holdingsCount);
+
+        // Calculate total investments (sum of quantities)
+        // const totalInvestmentsCount = Object.values(data.holdings).reduce(
+        //   (sum, quantity) => sum + quantity,
+        //   0
+        // );
+        // setTotalInvestments(totalInvestmentsCount);
+      } catch (error) {
+        console.error("Error fetching holdings:", error);
+        setPortfolioValue("Error");
+        // setTotalInvestments("Error");
+      }
+    };
+
+    // Fetch funds
+    const fetchFunds = async () => {
+      try {
+        const response = await fetch(
+          `/api/funds?uid=${userId}`
+        );
+        console.log("Funds Response:", response); // Debugging
+        if (!response.ok) {
+          throw new Error("Failed to fetch funds");
+        }
+        const data = await response.json();
+        console.log("Funds Data:", data); // Debugging
+        setFunds(`₹ ${data.funds.toFixed(2)}`);
+      } catch (error) {
+        console.error("Error fetching funds:", error);
+        setFunds("Error");
+      }
+    };
+
+    // Call all fetch functions
     fetchWalletBalance();
+    fetchPortfolioAndInvestments();
+    fetchFunds();
   }, []); // Empty dependency array ensures this runs only once on mount
 
   return (
@@ -84,7 +142,7 @@ const DashboardPage = () => {
           {[
             {
               title: "Total Portfolio Value",
-              value: "$24,685.75",
+              value: funds,
               change: "↑ 12.5%",
               icon: <TrendingUp className="h-4 w-4 text-muted-foreground" />,
               description: "from last month",
@@ -107,7 +165,7 @@ const DashboardPage = () => {
             },
             {
               title: "Active Investments",
-              value: "12",
+              value: portfolioValue,
               icon: <Clock className="h-4 w-4 text-muted-foreground" />,
               description: "Across 4 asset classes",
             },
