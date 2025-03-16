@@ -42,6 +42,12 @@ const Navbar = () => {
           >
             Help & Support
           </Link>
+          <Link
+            to="/lessons"
+            className="text-white transition duration-200 hover:text-gray-300"
+          >
+            E-Books
+          </Link>
         </div>
 
         {/* Profile and Logout / Login & Signup */}
