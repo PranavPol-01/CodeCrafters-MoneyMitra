@@ -228,11 +228,21 @@ const MoneyTracker = () => {
     <div className="grid gap-4 md:grid-cols-7">
       <Card className="md:col-span-7">
         <CardHeader>
-          <CardTitle>Money Tracker</CardTitle>
-          <p className="text-sm text-gray-500">
-            Track your income and expenses efficiently
-          </p>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Money Tracker
+              </h1>
+              <p className="text-muted-foreground">
+                Track your money efficiently
+              </p>
+            </div>
+            <div className="mt-4 md:mt-0 space-x-2">
+              <Button>View Details</Button>
+            </div>
+          </div>
         </CardHeader>
+
         <CardContent>
           {error && <p className="text-red-500">{error}</p>}
           {success && <p className="text-green-500">{success}</p>}

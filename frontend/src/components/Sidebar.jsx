@@ -44,11 +44,6 @@ const Sidebar = () => {
       path: "/dashboard",
     },
     {
-      label: "Simulation",
-      icon: <BarChart className="h-5 w-5" />,
-      path: "/simulation",
-    },
-    {
       label: "Paper Trading",
       icon: <Gamepad2 className="h-5 w-5" />,
       path: "/game/paper-trading",
