@@ -32,7 +32,8 @@ const Overview = ({ bonds, mutualFunds, sips, assetAllocationData, investmentRad
   };
 
   // Colors for PieChart
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+  const COLORS = ["#6A0DAD", "#9B30FF", "#B266FF", "#D9B3FF"];
+
 
   return (
     <TabsContent value="overview" className="space-y-6">

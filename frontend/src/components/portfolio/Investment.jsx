@@ -32,7 +32,7 @@ const Investments = ({ bonds, mutualFunds, sips, fundTypesChartData }) => {
   };
 
   // Colors for PieChart
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+  const COLORS = ["#1E3A8A","#60A5FA", "#BFDBFE", "#2563EB", ];
 
   return (
     <TabsContent value="investments" className="space-y-6">
@@ -81,7 +81,7 @@ const Investments = ({ bonds, mutualFunds, sips, fundTypesChartData }) => {
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="amount" fill="#4E79A7" />
+                  <Bar dataKey="amount" fill="#60A5FA" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -137,7 +137,7 @@ const Investments = ({ bonds, mutualFunds, sips, fundTypesChartData }) => {
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="amount" fill="#F28E2B" />
+                    <Bar dataKey="amount" fill="#60A5FA" />
                   </BarChart>
                 </ResponsiveContainer>
 
@@ -214,7 +214,7 @@ const Investments = ({ bonds, mutualFunds, sips, fundTypesChartData }) => {
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="amount" fill="#59A14F" />
+                  <Bar dataKey="amount" fill="#60A5FA" />
                 </BarChart>
               </ResponsiveContainer>
             </div>

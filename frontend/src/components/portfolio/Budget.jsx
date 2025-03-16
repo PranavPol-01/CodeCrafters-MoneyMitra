@@ -31,8 +31,8 @@ const Budget = ({ budget, budgetUtilizationData, budgetAllocationData }) => {
         return null;
     };
 
-    // Colors for PieChart
-    const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+    // Blue-themed colors for charts
+    const COLORS = ["#4A90E2", "#76B2E6", "#A1C9F1", "#D4E7F9"];
 
     return (
         <TabsContent value="budget" className="space-y-6">
@@ -44,11 +44,11 @@ const Budget = ({ budget, budgetUtilizationData, budgetAllocationData }) => {
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        <div className="bg-blue-50 p-4 rounded-lg">
+                        <div className="bg-blue-100 p-4 rounded-lg">
                             <p className="text-sm text-gray-500">Total Income</p>
                             <h3 className="text-2xl font-bold">₹{parseFloat(budget.income || 0).toFixed(2)}</h3>
                         </div>
-                        <div className="bg-green-50 p-4 rounded-lg">
+                        <div className="bg-blue-200 p-4 rounded-lg">
                             <p className="text-sm text-gray-500">Total Savings</p>
                             <h3 className="text-2xl font-bold">₹{parseFloat(budget.savings || 0).toFixed(2)}</h3>
                             <p className="text-xs mt-1">
@@ -58,14 +58,14 @@ const Budget = ({ budget, budgetUtilizationData, budgetAllocationData }) => {
                     </div>
 
                     <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={budgetUtilizationData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
+                        <BarChart data={budgetUtilizationData} barSize={40}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#D4E7F9" />
+                            <XAxis dataKey="name" tick={{ fill: "#4A90E2" }} />
+                            <YAxis tick={{ fill: "#4A90E2" }} />
                             <Tooltip />
                             <Bar dataKey="value">
                                 {budgetUtilizationData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                 ))}
                             </Bar>
                         </BarChart>
@@ -90,7 +90,7 @@ const Budget = ({ budget, budgetUtilizationData, budgetAllocationData }) => {
                                     labelLine={false}
                                     label={renderCustomizedLabel}
                                     outerRadius={80}
-                                    fill="#8884d8"
+                                    fill="#D4E7F9"
                                     dataKey="value"
                                 >
                                     {budgetAllocationData.map((entry, index) => (
@@ -122,60 +122,6 @@ const Budget = ({ budget, budgetUtilizationData, budgetAllocationData }) => {
                                 ))}
                             </TableBody>
                         </Table>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* Financial Health Metrics */}
-            <Card className="bg-white shadow-md">
-                <CardHeader>
-                    <CardTitle>Financial Health Metrics</CardTitle>
-                    <CardDescription>Key indicators of your financial status</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="p-4 border rounded-lg">
-                            <p className="text-sm text-gray-500">Savings Rate</p>
-                            <h3 className="text-xl font-bold">
-                                {budget.income ? ((budget.savings / budget.income) * 100).toFixed(1) : 0}%
-
-                            </h3>
-                            <p className="text-xs mt-1 text-gray-500">
-                                {budget.income && (budget.savings / budget.income) > 0.2
-                                    ? "Excellent"
-                                    : budget.income && (budget.savings / budget.income) > 0.1
-                                        ? "Good"
-                                        : "Needs improvement"}
-                            </p>
-                        </div>
-
-                        <div className="p-4 border rounded-lg">
-                            <p className="text-sm text-gray-500">Investment Ratio</p>
-                            <h3 className="text-xl font-bold">
-                                {budget.income
-                                    ? (
-                                        ((parseFloat(budget.bonds || 0) +
-                                            parseFloat(budget.stocks || 0) +
-                                            parseFloat(budget.mutualFunds || 0)) /
-                                            budget.income) *
-                                        100
-                                    ).toFixed(1)
-                                    : 0}
-                                %
-                            </h3>
-                            <p className="text-xs mt-1 text-gray-500">Portion of income allocated to investments</p>
-                        </div>
-
-                        <div className="p-4 border rounded-lg">
-                            <p className="text-sm text-gray-500">Expense Coverage</p>
-                            <h3 className="text-xl font-bold">
-                                {budget.income && budget.income > budget.savings
-                                    ? (budget.savings / (budget.income - budget.savings)).toFixed(1)
-                                    : 0}{" "}
-                                months
-                            </h3>
-                            <p className="text-xs mt-1 text-gray-500">How long savings can cover expenses</p>
-                        </div>
                     </div>
                 </CardContent>
             </Card>

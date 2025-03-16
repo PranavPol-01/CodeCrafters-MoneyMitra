@@ -242,7 +242,7 @@ const BondsForm = () => {
             <TableRow>
               <TableHead>Amount (₹)</TableHead>
               <TableHead>Interest Rate (%)</TableHead>
-              <TableHead>Maturity Date</TableHead>
+              {/* <TableHead>Maturity Date</TableHead> */}
               <TableHead>Bond Name</TableHead>
               <TableHead>Bond Type</TableHead>
               <TableHead>Coupon Frequency</TableHead>
@@ -257,7 +257,7 @@ const BondsForm = () => {
               <TableRow key={bond.id}>
                 <TableCell>₹{bond.amount}</TableCell>
                 <TableCell>{bond.interestRate}%</TableCell>
-                <TableCell>{bond.maturityDate}</TableCell>
+                {/* <TableCell>{bond.maturityDate}</TableCell> */}
                 <TableCell>{bond.bondName}</TableCell>
                 <TableCell>{bond.bondType}</TableCell>
                 <TableCell>{bond.couponFrequency}</TableCell>
