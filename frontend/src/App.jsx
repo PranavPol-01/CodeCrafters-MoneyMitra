@@ -5,21 +5,21 @@ import PredictMarket from "./Pages/Games/PredictMarket";
 import DashboardPage from "./Pages/Dashboard/DashboardPage";
 import SimulationPage from "./Pages/Simulation/SimulationPage";
 import PortfolioPage from "./Pages/Portfolio/PortfolioPage";
-// import LoginPage from "./Pages/Auth/LoginPage";
-// import SignupPage from "./Pages/Auth/SignupPage";
-// import LandingPage from "./Pages/LandingPage";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
-import { SidebarProvider } from "@/components/ui/sidebar"; // Import Sidebar Provider
+import { SidebarProvider } from "@/components/ui/sidebar";
 import BudgetPage from "./Pages/Budget/BudgetPage";
 import Register from "./Pages/Registration/Register";
 import Login from "./Pages/Registration/Login";
 import DriveFilesViewer from "./Pages/PDF/pdf";
+<<<<<<< Updated upstream
 import { useLocation } from "react-router-dom";
+=======
+import MoneyTracker from "./components/moneyTracker/MoneyTracker";
+>>>>>>> Stashed changes
 import Home from "./components/home/home";
 import ReportsPage from "./Pages/Report/ReportPage";
 import Savings from "./Pages/Saving/Saving";
-
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -32,8 +32,13 @@ const Layout = ({ children }) => {
     location.pathname === "/dashboard" ||
     location.pathname === "/budget" ||
     location.pathname === "/simulation" ||
+<<<<<<< Updated upstream
     location.pathname === "/report"||
     location.pathname === "/savings";
+=======
+    location.pathname === "/tracker" ||
+    location.pathname === "/report";
+>>>>>>> Stashed changes
 
   // Show Navbar only on Landing, Login, and Signup pages
   const showNavbar =
@@ -48,7 +53,7 @@ const Layout = ({ children }) => {
         <div className="flex flex-col flex-grow">
           {showNavbar && <Navbar />}{" "}
           {/* Navbar only for landing, login, signup */}
-          <div className={showSidebar ? "p-4" : ""}>{children}</div> 
+          <div className={showSidebar ? "p-4" : ""}>{children}</div>
         </div>
       </div>
     </SidebarProvider>
@@ -70,13 +75,18 @@ function App() {
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/budget" element={<BudgetPage />} />
           <Route path="/login" element={<Login />} />
-
+          <Route path="/tracker" element={<MoneyTracker />} />
           <Route path="/lessons" element={<DriveFilesViewer />} />
 
+<<<<<<< Updated upstream
           <Route path="/report" element={<ReportsPage/>} />
           <Route path="/simulation" element={<SimulationPage/>} />
           <Route path="/savings" element={<Savings/>} />
 
+=======
+          <Route path="/report" element={<ReportsPage />} />
+          <Route path="/simulation" element={<SimulationPage />} />
+>>>>>>> Stashed changes
         </Routes>
       </Layout>
     </Router>
