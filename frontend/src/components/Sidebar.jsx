@@ -93,6 +93,11 @@ const Sidebar = () => {
       icon: <User className="h-5 w-5" />,
       path: "/tracker",
     },
+    {
+      label: "Savings",
+      icon: <User className="h-5 w-5" />,
+      path: "/savings",
+    },
   ];
 
   return (

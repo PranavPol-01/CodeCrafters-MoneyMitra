@@ -3,7 +3,8 @@ from flask_cors import CORS
 from routes.stock_routes import stock_routes
 from routes.auth_routes import auth_routes
 from routes.investment_routes import investment_bp
-from routes.transaction_routes import transaction_routes
+# from routes.transaction_routes import transaction_routes
+from controllers.transaction_controller import transaction_blueprint
 from routes.user_routes import user_routes
 import os
 from routes.budget_routes import budget_bp
@@ -18,7 +19,7 @@ def home():
 
 app.register_blueprint(auth_routes, url_prefix='/auth')
 app.register_blueprint(investment_bp)
-app.register_blueprint(transaction_routes)
+app.register_blueprint(transaction_blueprint)
 app.register_blueprint(stock_routes)
 app.register_blueprint(user_routes)
 app.register_blueprint(budget_bp)

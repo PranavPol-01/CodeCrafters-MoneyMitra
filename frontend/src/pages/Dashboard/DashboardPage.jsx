@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -24,6 +24,39 @@ import TradingViewCryptoWidget from "@/components/dashboard/tradinviewcryptowidg
 import TradingViewMarketOverview from "@/components/dashboard/watchlistwidget";
 
 const DashboardPage = () => {
+  const [walletBalance, setWalletBalance] = useState("Loading...");
+
+  useEffect(() => {
+    // Retrieve userId from sessionStorage
+    const userId = sessionStorage.getItem("uid");
+    console.log("User ID from sessionStorage:", userId); // Debugging
+    if (!userId) {
+      setWalletBalance("User not found");
+      return;
+    }
+
+    // Fetch wallet balance from the backend
+    const fetchWalletBalance = async () => {
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:5000/transactions/${userId}/wallet`
+        );
+        console.log("Response:", response); // Debugging
+        if (!response.ok) {
+          throw new Error("Failed to fetch wallet balance");
+        }
+        const data = await response.json();
+        console.log("Wallet Balance Data:", data); // Debugging
+        setWalletBalance(`₹${data.wallet_balance.toFixed(2)}`);
+      } catch (error) {
+        console.error("Error fetching wallet balance:", error);
+        setWalletBalance("Error");
+      }
+    };
+
+    fetchWalletBalance();
+  }, []); // Empty dependency array ensures this runs only once on mount
+
   return (
     <div className="container mx-auto py-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
@@ -57,9 +90,10 @@ const DashboardPage = () => {
               description: "from last month",
               color: "text-emerald-500",
             },
+            // Embedded Wallet Balance Card
             {
               title: "Wallet Balance",
-              value: "$3,450.00",
+              value: walletBalance, // Dynamic wallet balance
               icon: <Wallet className="h-4 w-4 text-muted-foreground" />,
               description: "Available for investment",
             },

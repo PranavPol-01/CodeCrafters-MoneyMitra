@@ -1,50 +1,72 @@
-from flask import request, jsonify
+from flask import Blueprint, request, jsonify
 from models.transaction import Transaction
 
+# Define the blueprint
+transaction_blueprint = Blueprint("transaction_blueprint", __name__)
+
+@transaction_blueprint.route("/transactions/<user_id>", methods=["POST"])
 def add_transaction(user_id):
-    data = request.json
+    """
+    Add a new transaction for a user.
+    """
+    data = request.get_json()
+    if not data or 'amount' not in data or 'type' not in data:
+        return jsonify({"error": "Missing required fields: 'amount' and 'type'"}), 400
 
-    # Validate required fields
-    if not all(k in data for k in ("amount", "type", "description", "date", "time")):
-        return jsonify({"error": "Missing fields"}), 400
+    try:
+        result = Transaction.add_transaction(user_id, data)
+        return jsonify(result), 201
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
 
-    # Include user_id in the transaction data
-    data["user_id"] = user_id  
-
-    response = Transaction.add_transaction(user_id, data)
-    return jsonify(response), 201
-
+@transaction_blueprint.route("/transactions/<user_id>", methods=["GET"])
 def get_transactions(user_id):
     """
-    Get all transactions for a specific user.
+    Retrieve all transactions for a user.
     """
     transactions = Transaction.get_all_transactions(user_id)
-    return jsonify(transactions)
+    return jsonify(transactions), 200
 
+@transaction_blueprint.route("/transactions/<user_id>/<transaction_id>", methods=["GET"])
 def get_transaction(user_id, transaction_id):
     """
-    Get a specific transaction for a user.
+    Retrieve a specific transaction by its ID.
     """
     transaction = Transaction.get_transaction_by_id(user_id, transaction_id)
     if transaction:
-        return jsonify(transaction)
+        return jsonify(transaction), 200
     return jsonify({"error": "Transaction not found"}), 404
 
+@transaction_blueprint.route("/transactions/<user_id>/<transaction_id>", methods=["PUT"])
 def update_transaction(user_id, transaction_id):
     """
-    Update a specific transaction for a user.
+    Update an existing transaction.
     """
-    data = request.json
-    response = Transaction.update_transaction(user_id, transaction_id, data)
-    if response:
-        return jsonify(response)
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    result = Transaction.update_transaction(user_id, transaction_id, data)
+    if result:
+        return jsonify(result), 200
     return jsonify({"error": "Transaction not found"}), 404
 
+@transaction_blueprint.route("/transactions/<user_id>/<transaction_id>", methods=["DELETE"])
 def delete_transaction(user_id, transaction_id):
     """
-    Delete a specific transaction for a user.
+    Delete a transaction.
     """
-    response = Transaction.delete_transaction(user_id, transaction_id)
-    if response:
-        return jsonify(response)
+    result = Transaction.delete_transaction(user_id, transaction_id)
+    if result:
+        return jsonify(result), 200
     return jsonify({"error": "Transaction not found"}), 404
+
+@transaction_blueprint.route("/transactions/<user_id>/wallet", methods=["GET"])
+def get_wallet_balance(user_id):
+    """
+    Retrieve the wallet balance for a user.
+    """
+    wallet_balance = Transaction.get_wallet_balance(user_id)
+    if wallet_balance is not None:
+        return jsonify({"wallet_balance": wallet_balance}), 200
+    return jsonify({"error": "User not found"}), 404

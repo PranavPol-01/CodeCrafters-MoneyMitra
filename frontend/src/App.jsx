@@ -30,13 +30,15 @@ const Layout = ({ children }) => {
     location.pathname === "/budget" ||
     location.pathname === "/simulation" ||
     location.pathname === "/report" ||
-    location.pathname === "/savings";
-  location.pathname === "/tracker" || location.pathname === "/report";
+    location.pathname === "/savings" ||
+    location.pathname === "/tracker" ||
+    location.pathname === "/report";
   // Show Navbar only on Landing, Login, and Signup pages
   const showNavbar =
     location.pathname === "/" ||
     location.pathname === "/login" ||
-    location.pathname === "/register";
+    location.pathname === "/register" ||
+    location.pathname === "/lessons";
 
   return (
     <SidebarProvider>
