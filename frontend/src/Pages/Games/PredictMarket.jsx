@@ -120,6 +120,25 @@ const PredictMarket = () => {
     };
   };
 
+  // Generate market result (Up or Down)
+  const generateMarketResult = () => {
+    const trend = Math.random() > 0.5 ? "Up" : "Down";
+    return trend;
+  };
+
+  // Update chart with the new result
+  const updateChartWithResult = (marketResult) => {
+    const newData = generateNewStockData();
+    const lastPrice = newData.datasets[0].data[5];
+    const newPrice =
+      marketResult === "Up"
+        ? lastPrice + Math.random() * 10
+        : lastPrice - Math.random() * 10;
+    newData.datasets[0].data.push(Math.round(newPrice * 100) / 100);
+    newData.labels.push(`Day ${newData.labels.length + 1}`);
+    return newData;
+  };
+
   // Initialize chart data
   useEffect(() => {
     try {
