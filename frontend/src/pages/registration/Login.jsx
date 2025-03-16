@@ -53,11 +53,15 @@ const Login = () => {
 
           {/* Demo Credentials Box */}
           <div className="mt-4 p-3 border border-gray-300 bg-gray-100 rounded-md text-sm text-gray-700">
-            <p className="font-semibold">Demo Credentials:</p>
+            <p className="font-semibold">Demo Credentials for Users:</p>
             <p>Email: <span className="font-mono">dkhapekar@gmail.com</span></p>
             <p>Password: <span className="font-mono">123456789</span></p>
           </div>
-
+          <div className="mt-4 p-3 border border-gray-300 bg-gray-100 rounded-md text-sm text-gray-700">
+            <p className="font-semibold">Demo Credentials for Advisors:</p>
+            <p>Email: <span className="font-mono">testadvisor@gmail.com</span></p>
+            <p>Password: <span className="font-mono">123456789</span></p>
+          </div>
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <input
               type="email"
