@@ -43,12 +43,12 @@ const Navbar = () => {
           >
             About Taxes
           </Link>
-          <Link
+          {/* <Link
             to="/help"
             className="text-white transition duration-200 hover:text-gray-300"
           >
             Help & Support
-          </Link>
+          </Link> */}
           <Link
             to="/lessons"
             className="text-white transition duration-200 hover:text-gray-300"
@@ -88,7 +88,6 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              
               <Link
                 to="/login"
                 className="text-white transition duration-200 hover:text-gray-300 border-2 border-white py-2 px-4 rounded-md hover:bg-gray-700 transform transition-all duration-300"
@@ -105,7 +104,7 @@ const Navbar = () => {
           )}
         </div>
 
-        <GoogleTranslate/>
+        <GoogleTranslate />
 
         {/* Hamburger Menu for Mobile */}
         <div className="lg:hidden">
