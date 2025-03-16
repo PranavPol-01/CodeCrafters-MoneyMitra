@@ -32,6 +32,7 @@ const Sidebar = () => {
   const location = useLocation();
   const username = sessionStorage.getItem("username");
   const email = sessionStorage.getItem("email");
+  const role = sessionStorage.getItem("role");
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -99,7 +100,20 @@ const Sidebar = () => {
       path: "/savings",
     },
   ];
-
+  // Conditionally add the Advisor/Consult button
+  if (role === "Advisor") {
+    menuItems.push({
+      label: "Advisor Dashboard",
+      icon: <User className="h-5 w-5" />,
+      path: "/advisor",
+    });
+  } else {
+    menuItems.push({
+      label: "Consult an Advisor",
+      icon: <User className="h-5 w-5" />,
+      path: "/consult",
+    });
+  }
   return (
     <div
       className={`sidebar h-screen flex flex-col bg-background border-r transition-all duration-300 ${

@@ -13,7 +13,7 @@ from routes.user_routes import user_routes
 from routes.expense_route import expense_bp
 from routes.saving_routes import savings_bp
 from routes.budget_routes import budget_bp
-
+from routes.advisor_routes import advisor_bp
 from functools import wraps
 
 app = Flask(__name__)
@@ -50,6 +50,7 @@ app.register_blueprint(user_routes)
 app.register_blueprint(budget_bp)
 app.register_blueprint(expense_bp)
 app.register_blueprint(savings_bp)
+app.register_blueprint(advisor_bp)
 # @app.route('/api/monthly-data', methods=['GET'])
 # @require_auth
 # def get_monthly_data():

@@ -25,6 +25,8 @@ import ItrFiling from "./Pages/ITR/ItrFiling/itr-filing";
 import TaxNotice from "./Pages/ITR/IncomeTaxNotice/tax-notice";
 import WhatAreTaxes from "./Pages/ITR/WhatAreTaxes/what-are-taxes";
 import TaxBar from "./Pages/ITR/TaxBar";
+import FinancialAdvisorDashboard from "./Pages/Advisor/Dashboard";
+import ConsultAdvisor from "./Pages/Advisor/Consult";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -40,7 +42,10 @@ const Layout = ({ children }) => {
     location.pathname === "/report" ||
     location.pathname === "/savings" ||
     location.pathname === "/tracker" ||
+    location.pathname === "/advisor" ||
+    location.pathname === "/consult" ||
     location.pathname === "/report";
+    
   // Show Navbar only on Landing, Login, and Signup pages
   const showNavbar =
     location.pathname === "/" ||
@@ -106,6 +111,10 @@ function App() {
           <Route path="/tax/savetax" element={<SaveTaxes />} />
           <Route path="/tax/itrfiling" element={<ItrFiling />} />
           <Route path="/tax/notice" element={<TaxNotice />} />
+
+          <Route path="/advisor" element={<FinancialAdvisorDashboard />} />
+          <Route path="/consult" element={<ConsultAdvisor />} />
+
 
         </Routes>
       </Layout>
