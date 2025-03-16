@@ -17,6 +17,14 @@ import MoneyTracker from "./components/moneyTracker/MoneyTracker";
 import Home from "./components/home/home";
 import ReportsPage from "./Pages/Report/ReportPage";
 import Savings from "./Pages/Saving/Saving";
+import AboutTaxes from "./Pages/ITR/AboutTaxes";
+import TypesOfTaxes from "./Pages/ITR/TypesOfTaxes/types-of-taxes";
+import TaxPlanning from "./Pages/ITR/TaxPlanning/tax-planning";
+import SaveTaxes from "./Pages/ITR/SaveTaxes/save-taxes";
+import ItrFiling from "./Pages/ITR/ItrFiling/itr-filing";
+import TaxNotice from "./Pages/ITR/IncomeTaxNotice/tax-notice";
+import WhatAreTaxes from "./Pages/ITR/WhatAreTaxes/what-are-taxes";
+import TaxBar from "./Pages/ITR/TaxBar";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -40,10 +48,20 @@ const Layout = ({ children }) => {
     location.pathname === "/register" ||
     location.pathname === "/lessons";
 
+  const showTaxBar =
+    location.pathname === "/tax" ||
+    location.pathname === "/tax/info" ||
+    location.pathname === "/tax/types" ||
+    location.pathname === "/tax/planning" ||
+    location.pathname === "/tax/savetax" ||
+    location.pathname === "/tax/itrfiling" ||
+    location.pathname === "/tax/notice";
   return (
     <SidebarProvider>
       <div className="flex w-full h-screen">
         {showSidebar && <Sidebar className="w-64" />}
+        {showTaxBar && <TaxBar />}{" "}
+
         <div className="flex flex-col flex-grow">
           {showNavbar && <Navbar />}{" "}
           {/* Navbar only for landing, login, signup */}
@@ -80,6 +98,15 @@ function App() {
           <Route path="/simulation" element={<SimulationPage />} />
           <Route path="/report" element={<ReportsPage />} />
           <Route path="/simulation" element={<SimulationPage />} />
+
+          <Route path="/tax" element={<AboutTaxes />} />
+          <Route path="/tax/info" element={<WhatAreTaxes />} />
+          <Route path="/tax/types" element={<TypesOfTaxes />} />
+          <Route path="/tax/planning" element={<TaxPlanning />} />
+          <Route path="/tax/savetax" element={<SaveTaxes />} />
+          <Route path="/tax/itrfiling" element={<ItrFiling />} />
+          <Route path="/tax/notice" element={<TaxNotice />} />
+
         </Routes>
       </Layout>
     </Router>

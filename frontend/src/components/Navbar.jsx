@@ -156,6 +156,12 @@ const Navbar = () => {
             >
               Profile
             </Link>
+            <Link
+              to="/tax"
+              className="block text-white transition duration-200 hover:text-gray-300"
+            >
+              About Taxes
+            </Link>
             <button
               onClick={handleLogout}
               className="block text-white transition duration-200 hover:text-gray-300"
@@ -165,6 +171,12 @@ const Navbar = () => {
           </>
         ) : (
           <>
+            <Link
+              to="/tax"
+              className="block text-white transition duration-200 hover:text-gray-300"
+            >
+              About Taxes
+            </Link>
             <Link
               to="/login"
               className="block text-white transition duration-200 hover:text-gray-300"
