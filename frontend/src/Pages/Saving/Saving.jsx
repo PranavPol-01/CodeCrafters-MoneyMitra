@@ -1,6 +1,8 @@
 import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import SIPForm from "../../components/saving/SIP";
+import BondsForm from "../../components/saving/Bonds";
+import MutualFundsForm from "../../components/saving/MutualFunds";
 // import BondsForm from "@/components/BondsForm";
 // import MutualFundsForm from "@/components/MutualFundsForm";
 
@@ -24,12 +26,12 @@ const Savings = () => {
 
         {/* Bonds Tab Content */}
         <TabsContent value="bonds">
-          {/* <BondsForm /> */}
+          <BondsForm />
         </TabsContent>
 
         {/* Mutual Funds Tab Content */}
         <TabsContent value="mutual-funds">
-          {/* <MutualFundsForm /> */}
+          <MutualFundsForm />
         </TabsContent>
       </Tabs>
     </div>
