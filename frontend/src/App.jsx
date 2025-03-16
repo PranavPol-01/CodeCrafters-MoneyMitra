@@ -29,19 +29,6 @@ import FinancialAdvisorDashboard from "./Pages/Advisor/Dashboard";
 import ConsultAdvisor from "./Pages/Advisor/Consult";
 
 const Layout = ({ children }) => {
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker
-        .register("/service-worker.js")
-        .then((registration) => {
-          console.log("Service Worker registered: ", registration);
-        })
-        .catch((error) => {
-          console.log("Service Worker registration failed: ", error);
-        });
-    });
-  }
-
   const location = useLocation();
 
   // Show Sidebar for specific routes
@@ -58,7 +45,7 @@ const Layout = ({ children }) => {
     location.pathname === "/advisor" ||
     location.pathname === "/consult" ||
     location.pathname === "/report";
-
+    
   // Show Navbar only on Landing, Login, and Signup pages
   const showNavbar =
     location.pathname === "/" ||
@@ -79,9 +66,11 @@ const Layout = ({ children }) => {
     <SidebarProvider>
       <div className="flex w-full h-screen">
         {showSidebar && <Sidebar className="w-64" />}
+        
 
         <div className="flex flex-col flex-grow">
           {showNavbar && <Navbar />}{" "}
+          
           {/* Navbar only for landing, login, signup */}
           <div className={showSidebar ? "p-4" : ""}>{children}</div>
         </div>
@@ -128,6 +117,8 @@ function App() {
 
           <Route path="/advisor" element={<FinancialAdvisorDashboard />} />
           <Route path="/consult" element={<ConsultAdvisor />} />
+
+
         </Routes>
       </Layout>
     </Router>
