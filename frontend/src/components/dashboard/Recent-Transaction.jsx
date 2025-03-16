@@ -5,7 +5,9 @@ const RecentTransactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [livePricesLoaded, setLivePricesLoaded] = useState(false);
 
+  // First effect to fetch initial transactions
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
@@ -34,9 +36,9 @@ const RecentTransactions = () => {
     fetchTransactions();
   }, []);
 
-  // Fetch live stock prices for all unique tickers in transactions
+  // Separate effect to fetch live prices ONCE after transactions are loaded
   useEffect(() => {
-    if (transactions.length === 0) return;
+    if (transactions.length === 0 || livePricesLoaded) return;
 
     const fetchLivePrices = async () => {
       try {
@@ -80,13 +82,15 @@ const RecentTransactions = () => {
         });
 
         setTransactions(updatedTransactions);
+        setLivePricesLoaded(true); // Mark that we've loaded prices
       } catch (err) {
         console.error("Error fetching live stock prices:", err);
+        setLivePricesLoaded(true); // Mark as loaded even on error to prevent retry loop
       }
     };
 
     fetchLivePrices();
-  }, [transactions]);
+  }, [transactions, livePricesLoaded]);
 
   if (loading) {
     return <div>Loading transactions...</div>;
@@ -109,8 +113,8 @@ const RecentTransactions = () => {
       day: "numeric",
     }),
     status: "completed",
-    change: `${transaction.changePercent}%`,
-    isPositive: transaction.changePercent >= 0,
+    change: `${transaction.changePercent || '0.00'}%`,
+    isPositive: parseFloat(transaction.changePercent || 0) >= 0,
   }));
 
   return (

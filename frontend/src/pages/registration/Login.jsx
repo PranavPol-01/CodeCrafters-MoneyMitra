@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("User"); // Default role is User
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -22,10 +21,8 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // If role is not found in DB, default to "User"
         const userRole = data.user.role || "User";
 
-        // Store login details in session storage
         sessionStorage.setItem("email", data.user.email);
         sessionStorage.setItem("username", data.user.username);
         sessionStorage.setItem("uid", data.user.uid);
@@ -54,6 +51,13 @@ const Login = () => {
             Optimize Your Investments with AI & Data Analytics
           </p>
 
+          {/* Demo Credentials Box */}
+          <div className="mt-4 p-3 border border-gray-300 bg-gray-100 rounded-md text-sm text-gray-700">
+            <p className="font-semibold">Demo Credentials:</p>
+            <p>Email: <span className="font-mono">dkhapekar@gmail.com</span></p>
+            <p>Password: <span className="font-mono">123456789</span></p>
+          </div>
+
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <input
               type="email"
@@ -71,18 +75,6 @@ const Login = () => {
               placeholder="Password"
               required
             />
-
-            {/* Role Selection Dropdown */}
-            {/* <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="User">User</option>
-              <option value="Admin">Admin</option>
-              <option value="Advisor">Advisor</option>
-            </select> */}
 
             <button
               type="submit"

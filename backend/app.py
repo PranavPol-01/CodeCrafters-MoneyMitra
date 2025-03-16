@@ -145,7 +145,7 @@ def get_monthly_data():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/budget-progress', methods=['GET'])
+@app.route('/budget-progress', methods=['GET'])
 @require_auth
 def get_budget_progress():
     try:

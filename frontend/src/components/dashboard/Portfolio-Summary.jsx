@@ -203,7 +203,7 @@ const PortfolioSummary = () => {
         }
 
         // Fetch budget progress data
-        const budgetResponse = await axios.get("http://localhost:5000/api/budget-progress", {
+        const budgetResponse = await axios.get("/api/budget-progress", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
