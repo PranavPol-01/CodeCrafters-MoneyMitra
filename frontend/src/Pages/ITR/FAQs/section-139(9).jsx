@@ -1,9 +1,10 @@
 import React from "react";
 import "../AboutTaxes.css";
 import DefectiveReturn from "../../../../assets/faq-section-139-9.jpeg";
-
+import TaxBar from "../TaxBar";
 function Section139_9() {
   return (
+    <><TaxBar/>
     <section className="blog-container">
       <div className="blog-header">
         <div className="blog-author">
@@ -254,6 +255,7 @@ function Section139_9() {
         </div>
       </div>
     </section>
+    </>
   );
 }
 

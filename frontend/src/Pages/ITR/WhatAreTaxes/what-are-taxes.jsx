@@ -1,8 +1,9 @@
 import React from "react";
 import { Button } from "@/components/ui/button"; // Assuming shadcn Button component
-
+import TaxBar from "../TaxBar";
 function WhatAreTaxes() {
   return (
+    <><TaxBar/>
     <section className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       {/* Blog Header */}
       <div className="flex justify-between items-center mb-4">
@@ -195,6 +196,7 @@ function WhatAreTaxes() {
         <Button variant="outline">Next</Button>
       </div>
     </section>
+      </>
   );
 }
 

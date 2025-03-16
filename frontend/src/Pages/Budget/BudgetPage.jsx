@@ -169,7 +169,7 @@ const AddExpenseForm = ({ onClose }) => {
               
               <TabsContent value="investments" className="space-y-6">
                 <div className="p-4 bg-blue-50 rounded-lg mb-4">
-                  <p className="text-sm text-blue-700 font-medium">Total Allocation: ${totalInvestment.toFixed(2)}</p>
+                  <p className="text-sm text-blue-700 font-medium">Total Allocation: Rs.{totalInvestment.toFixed(2)}</p>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -372,21 +372,21 @@ const BudgetPage = () => {
         {[
           {
             title: "Monthly Income",
-            amount: `$${monthlyData.income.toLocaleString()}`,
+            amount: `Rs. ${monthlyData.income.toLocaleString()}`,
             change: "↑ 8.2%",
             changeColor: "text-emerald-500",
             icon: <Wallet className="h-4 w-4 text-muted-foreground" />,
           },
           {
             title: "Monthly Expenses",
-            amount: `$${monthlyData.expenses.toLocaleString()}`,
+            amount: `Rs. ${monthlyData.expenses.toLocaleString()}`,
             change: "↑ 2.5%",
             changeColor: "text-rose-500",
             icon: <TrendingDown className="h-4 w-4 text-muted-foreground" />,
           },
           {
             title: "Savings",
-            amount: `$${monthlyData.savings.toLocaleString()}`,
+            amount: `Rs. ${monthlyData.savings.toLocaleString()}`,
             change: `${((monthlyData.savings / monthlyData.income) * 100).toFixed(1)}% of income`,
             changeColor: "text-muted-foreground",
             icon: <PiggyBank className="h-4 w-4 text-muted-foreground" />,

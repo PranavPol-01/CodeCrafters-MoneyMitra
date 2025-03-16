@@ -1,9 +1,10 @@
 import React from "react";
 import { Button } from "@/components/ui/button"; // Assuming shadcn Button component
 import data from "./tables/types-of-taxes.json"; // Import JSON data
-
+import TaxBar from "../TaxBar";
 function TypesOfTaxes() {
   return (
+    <><TaxBar/>
     <section className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       {/* Blog Header */}
       <div className="flex justify-between items-center mb-4">
@@ -82,6 +83,7 @@ function TypesOfTaxes() {
         <Button variant="outline">Next</Button>
       </div>
     </section>
+    </>
   );
 }
 

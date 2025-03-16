@@ -95,9 +95,9 @@ const Login = () => {
         {/* Right Side - Image */}
         <div className="md:w-1/2 hidden md:block">
           <img
-            src="https://images.unsplash.com/photo-1522881451255-f59ad836fdfb?q=80&w=1935&auto=format&fit=crop"
-            alt="DigiKshetra Login"
-            className="w-full h-full object-cover"
+            src="../../../public/logo.svg"
+            alt="Login"
+            className="object-cover w-full h-full"
           />
         </div>
       </div>
