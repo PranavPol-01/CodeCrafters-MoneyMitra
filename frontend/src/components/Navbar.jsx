@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import GoogleTranslate from "./Translate/GoogleTranslate";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -66,12 +67,12 @@ const Navbar = () => {
               >
                 Dashboard
               </Link>
-              <Link
+              {/* <Link
                 to="/profile"
                 className="text-white transition duration-200 hover:text-gray-300 border-2 border-white py-2 px-4 rounded-md hover:bg-gray-700 transform transition-all duration-300"
               >
                 Profile
-              </Link>
+              </Link> */}
               {/* <Link
                 to="/tax"
                 className="block text-white transition duration-200 hover:text-gray-300"
@@ -108,6 +109,8 @@ const Navbar = () => {
             </>
           )}
         </div>
+
+        <GoogleTranslate/>
 
         {/* Hamburger Menu for Mobile */}
         <div className="lg:hidden">

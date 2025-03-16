@@ -73,7 +73,7 @@ const LandingPage = () => {
 
               <div className="bg-background p-6 rounded-lg shadow-md border">
                 <LineChart className="h-10 w-10 text-primary mb-4" />
-                <h3 className="text-xl text-black font-bold mb-2">Real-Time Analytics</h3>
+                <h3 className="text-xl text-black font-bold mb-2">AI based Recommendations</h3>
                 <p className="text-muted-foreground">
                   AI-driven market analysis provides deep insights into trends and investment opportunities.
                 </p>
@@ -89,9 +89,9 @@ const LandingPage = () => {
 
               <div className="bg-background p-6 rounded-lg shadow-md border">
                 <FileCheck className="h-10 w-10 text-primary mb-4" />
-                <h3 className="text-xl text-black font-bold mb-2">KYC Verification</h3>
+                <h3 className="text-xl text-black font-bold mb-2">Investment Tracking</h3>
                 <p className="text-muted-foreground">
-                  Seamless and secure Know Your Customer (KYC) authentication to prevent fraud.
+                Track investments securely. Store data and access anytime. Learn basics with our e-book.Download our investment guide
                 </p>
               </div>
 
@@ -167,7 +167,7 @@ const LandingPage = () => {
   </div>
 </section>
 
-{/* Technology Section */}
+ {/* Technology Section */}
 <section id="technology" className="py-20 bg-muted bg-gradient-to-b from-gray-800 to-gray-900">
   <div className="container mx-auto px-4">
     <div className="text-center mb-12">
@@ -208,28 +208,21 @@ const LandingPage = () => {
         <h3 className="text-lg font-semibold text-white">Tailwind CSS</h3>
       </div>
 
-      {/* ShadCN */}
-      <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
-        <img src="https://avatars.githubusercontent.com/u/139761612?s=200&v=4" 
-             alt="ShadCN" className="w-12 h-12 mb-2 rounded-full" />
-        <h3 className="text-lg font-semibold text-white">ShadCN</h3>
-      </div>
+      {/* ShadCN and Vite - Wrapped in a Flex Container */}
+      <div className="col-span-2 md:col-span-3 lg:col-span-4 flex justify-center gap-6">
+        {/* ShadCN */}
+        <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
+          <img src="https://avatars.githubusercontent.com/u/139761612?s=200&v=4" 
+               alt="ShadCN" className="w-12 h-12 mb-2 rounded-full" />
+          <h3 className="text-lg font-semibold text-white">ShadCN</h3>
+        </div>
 
-      {/* Vite */}
-      <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Vitejs-logo.svg" 
-             alt="Vite" className="w-12 h-12 mb-2" />
-        <h3 className="text-lg font-semibold text-white">Vite</h3>
-      </div>
-
-      {/* Empty Box 1 */}
-      <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
-        <h3 className="text-lg font-semibold text-white">Coming Soon</h3>
-      </div>
-
-      {/* Empty Box 2 */}
-      <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
-        <h3 className="text-lg font-semibold text-white">Coming Soon</h3>
+        {/* Vite */}
+        <div className="flex flex-col items-center p-4 border border-gray-700 rounded-lg bg-gray-800">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Vitejs-logo.svg" 
+               alt="Vite" className="w-12 h-12 mb-2" />
+          <h3 className="text-lg font-semibold text-white">Vite</h3>
+        </div>
       </div>
     </div>
   </div>

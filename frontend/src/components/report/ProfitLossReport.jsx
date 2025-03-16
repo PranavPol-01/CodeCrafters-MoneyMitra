@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,146 +6,148 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileDown, FileText, Printer } from "lucide-react";
 import {
-  LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
-
+import { ArrowDown, ArrowUp } from "lucide-react";
+import Recommendation from './Recommendation';
 
 const profitLossData = [
   { date: "2025-01-01", value: 20000 },
-  { date: "2025-01-15", value: 20500 },
+  { date: "2025-01-15", value: 10500 },
   { date: "2025-02-01", value: 21200 },
-  { date: "2025-02-15", value: 22500 },
-  { date: "2025-03-01", value: 23800 },
+  { date: "2025-02-15", value: 20500 },
+  { date: "2025-03-01", value: 15800 },
   { date: "2025-03-15", value: 24685 },
-];
-
-const assetPerformance = [
-  {
-    id: "1",
-    name: "NVIDIA Corp.",
-    symbol: "NVDA",
-    initialValue: 2900,
-    currentValue: 3850.4,
-    profit: 950.4,
-    change: "+32.5%",
-  },
-  {
-    id: "2",
-    name: "Meta Platforms",
-    symbol: "META",
-    initialValue: 2140,
-    currentValue: 2526.4,
-    profit: 386.4,
-    change: "+18.2%",
-  },
-  {
-    id: "3",
-    name: "Bitcoin",
-    symbol: "BTC",
-    initialValue: 2950,
-    currentValue: 3412.5,
-    profit: 462.5,
-    change: "+15.8%",
-  },
-  {
-    id: "4",
-    name: "Tesla Inc.",
-    symbol: "TSLA",
-    initialValue: 1100,
-    currentValue: 1212.5,
-    profit: 112.5,
-    change: "+10.0%",
-  },
-  {
-    id: "5",
-    name: "Apple Inc.",
-    symbol: "AAPL",
-    initialValue: 1850,
-    currentValue: 1905.5,
-    profit: 55.5,
-    change: "+3.0%",
-  },
-  {
-    id: "6",
-    name: "S&P 500 ETF",
-    symbol: "SPY",
-    initialValue: 2200,
-    currentValue: 2266.0,
-    profit: 66.0,
-    change: "+3.0%",
-  },
-  {
-    id: "7",
-    name: "Gold ETF",
-    symbol: "GLD",
-    initialValue: 1520,
-    currentValue: 1483.2,
-    profit: -36.8,
-    change: "-2.5%",
-  },
-  {
-    id: "8",
-    name: "Bond ETF",
-    symbol: "BND",
-    initialValue: 2145,
-    currentValue: 2105.6,
-    profit: -39.4,
-    change: "-1.8%",
-  },
 ];
 
 export function ProfitLossReport() {
   const [transactionTab, setTransactionTab] = useState('all');
-  const [transactionHistory, setTransactionHistory] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [originaltransactions, setOriginalTransactions] = useState([]);
+  const [assetPerformance, setAssetPerformance] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Fetch transactions
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
+        // Get UID from sessionStorage
         const userId = sessionStorage.getItem("uid");
+
         if (!userId) {
-          console.error("User ID not found in session storage.");
-          return;
+          throw new Error("User ID not found in sessionStorage");
         }
-  
+
         // Fetch transactions from the API
-        const response = await fetch(`/api/transactions?uid=${userId}`);
-        console.log("API Response:", response);
-  
-        // Check if the response is OK (status code 200-299)
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+        const transactionsResponse = await fetch(`/api/transactions?uid=${userId}`);
+        if (!transactionsResponse.ok) {
+          throw new Error("Failed to fetch transactions");
         }
-  
-        // Parse the response as JSON
-        const responseData = await response.json();
-        console.log("Response Data:", responseData);
-  
-        // Check if the response contains the expected data structure
-        if (!responseData || !Array.isArray(responseData.transactions)) {
-          throw new Error("Invalid response format: Expected 'transactions' array");
-        }
-  
-        // Format the transactions data
-        const formattedData = responseData.transactions.map((transaction) => ({
-          id: transaction.id || "N/A", // Add a fallback for missing ID
-          date: new Date(transaction.timestamp).toLocaleString(), // Full date & time format
-          type: transaction.type ? transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1) : "Unknown", // Handle missing type
-          asset: transaction.stock_symbol || "N/A", // Handle missing stock symbol
-          amount: `$${transaction.total_cost?.toFixed(2) || "0.00"}`, // Handle missing total cost
-          shares: transaction.quantity || 0, // Handle missing quantity
-          price: `$${transaction.price_per_share?.toFixed(2) || "0.00"}`, // Handle missing price per share
-        }));
-  
-        // Update the state with the formatted data
-        setTransactionHistory(formattedData);
-      } catch (error) {
-        console.error("Error fetching transactions:", error);
+
+        const transactionsData = await transactionsResponse.json();
+        setOriginalTransactions(transactionsData.transactions);
+        setTransactions(transactionsData.transactions);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
     };
-  
+
     fetchTransactions();
   }, []);
+
+  // Fetch live stock prices for all unique tickers in transactions
+  useEffect(() => {
+    if (transactions.length === 0) return;
+
+    const fetchLivePrices = async () => {
+      try {
+        // Extract unique stock symbols from transactions
+        const uniqueSymbols = [
+          ...new Set(transactions.map((t) => t.stock_symbol + ".NS")),
+        ];
+
+        // Fetch live stock prices
+        const response = await fetch("/api/get_stock_prices", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ stock_symbols: uniqueSymbols }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch live stock prices");
+        }
+
+        const data = await response.json();
+        const livePrices = data.stock_prices;
+
+        // Update transactions with live price and percentage change
+        const updatedTransactions = transactions.map((transaction) => {
+          const livePrice = livePrices[transaction.stock_symbol + ".NS"];
+          const changePercent = livePrice
+            ? (
+                ((livePrice - transaction.price_per_share) /
+                  transaction.price_per_share) *
+                100
+              ).toFixed(2)
+            : "N/A";
+
+          return {
+            ...transaction,
+            livePrice,
+            changePercent,
+          };
+        });
+
+        setTransactions(updatedTransactions);
+
+        // Calculate asset performance
+        const assetMap = {};
+        updatedTransactions.forEach((transaction) => {
+          const symbol = transaction.stock_symbol;
+          if (!assetMap[symbol]) {
+            assetMap[symbol] = {
+              symbol,
+              initialValue: transaction.price_per_share * transaction.quantity,
+              currentValue: transaction.livePrice * transaction.quantity,
+              quantity: transaction.quantity,
+            };
+          } else {
+            assetMap[symbol].initialValue += transaction.price_per_share * transaction.quantity;
+            assetMap[symbol].currentValue += transaction.livePrice * transaction.quantity;
+            assetMap[symbol].quantity += transaction.quantity;
+          }
+        });
+
+        const assetPerformanceData = Object.values(assetMap).map((asset) => ({
+          id: asset.symbol,
+          symbol: asset.symbol,
+          initialValue: asset.initialValue,
+          currentValue: asset.currentValue,
+          profit: asset.currentValue - asset.initialValue,
+          change: ((asset.currentValue - asset.initialValue) / asset.initialValue * 100).toFixed(2) + "%",
+        }));
+
+        setAssetPerformance(assetPerformanceData);
+      } catch (err) {
+        console.error("Error fetching live stock prices:", err);
+      }
+    };
+
+    fetchLivePrices();
+  }, [transactions]);
+
+  if (loading) {
+    return <div>Loading transactions...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -163,6 +163,7 @@ export function ProfitLossReport() {
 
   return (
     <div className="grid gap-4 md:grid-cols-7">
+      {/* Portfolio Value Over Time Card */}
       <Card className="md:col-span-7">
         <CardHeader>
           <CardTitle>Portfolio Value Over Time</CardTitle>
@@ -193,24 +194,12 @@ export function ProfitLossReport() {
               </AreaChart>
             </ResponsiveContainer>
           </div>
-
-          <div className="flex justify-between items-center mt-4">
-            <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Starting Value</div>
-              <div className="text-lg font-medium">$20,000.00</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Current Value</div>
-              <div className="text-lg font-medium">$24,685.75</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Total Profit/Loss</div>
-              <div className="text-lg font-medium text-emerald-500">+$4,685.75 (+23.5%)</div>
-            </div>
-          </div>
         </CardContent>
       </Card>
 
+      <Recommendation transactions={originaltransactions}/>
+
+      {/* Asset Performance Card */}
       <Card className="md:col-span-7">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
@@ -246,16 +235,11 @@ export function ProfitLossReport() {
             <TableBody>
               {assetPerformance.map((asset) => (
                 <TableRow key={asset.id}>
-                  <TableCell className="font-medium">
-                    <div>
-                      {asset.symbol}
-                      <div className="text-xs text-muted-foreground">{asset.name}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>${asset.initialValue.toLocaleString()}</TableCell>
-                  <TableCell>${asset.currentValue.toLocaleString()}</TableCell>
+                  <TableCell className="font-medium">{asset.symbol}</TableCell>
+                  <TableCell>Rs {asset.initialValue.toFixed(2)}</TableCell>
+                  <TableCell>Rs {asset.currentValue.toFixed(2)}</TableCell>
                   <TableCell className={asset.profit >= 0 ? "text-emerald-500" : "text-rose-500"}>
-                    {asset.profit >= 0 ? "+" : ""}${asset.profit.toLocaleString()}
+                    {asset.profit >= 0 ? "+" : ""}Rs {asset.profit.toFixed(2)}
                   </TableCell>
                   <TableCell
                     className={`text-right font-medium ${asset.change.startsWith("+") ? "text-emerald-500" : "text-rose-500"
@@ -270,6 +254,7 @@ export function ProfitLossReport() {
         </CardContent>
       </Card>
 
+      {/* Transaction History Card */}
       <Card className="md:col-span-7">
         <CardHeader>
           <CardTitle>Transaction History</CardTitle>
@@ -295,93 +280,37 @@ export function ProfitLossReport() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {transactionHistory.map((transaction) => (
+                  {transactions.map((transaction) => (
                     <TableRow key={transaction.id}>
-                      <TableCell>{transaction.date}</TableCell>
+                      <TableCell>
+                        {new Date(transaction.timestamp).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </TableCell>
                       <TableCell>
                         <Badge
-                          variant={transaction.type === "Buy" ? "outline" : "secondary"}
-                          className={transaction.type === "Buy" ? "text-emerald-500" : "text-rose-500"}
+                          variant={transaction.type === "buy" ? "outline" : "secondary"}
+                          className={transaction.type === "buy" ? "text-emerald-500" : "text-rose-500"}
                         >
                           {transaction.type}
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-medium">{transaction.asset}</TableCell>
-                      <TableCell>{transaction.amount}</TableCell>
-                      <TableCell>{transaction.shares}</TableCell>
-                      <TableCell className="text-right">{transaction.price}</TableCell>
+                      <TableCell className="font-medium">{transaction.stock_symbol}</TableCell>
+                      <TableCell>Rs {transaction.total_cost.toFixed(2)}</TableCell>
+                      <TableCell>{transaction.quantity.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">Rs {transaction.price_per_share.toFixed(2)}</TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
-              </Table>
-            </TabsContent>
-            <TabsContent value="buy" className="pt-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Asset</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Shares</TableHead>
-                    <TableHead className="text-right">Price Per Share</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {transactionHistory
-                    .filter((transaction) => transaction.type === "Buy")
-                    .map((transaction) => (
-                      <TableRow key={transaction.id}>
-                        <TableCell>{transaction.date}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="text-emerald-500">
-                            {transaction.type}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="font-medium">{transaction.asset}</TableCell>
-                        <TableCell>{transaction.amount}</TableCell>
-                        <TableCell>{transaction.shares}</TableCell>
-                        <TableCell className="text-right">{transaction.price}</TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TabsContent>
-            <TabsContent value="sell" className="pt-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Asset</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Shares</TableHead>
-                    <TableHead className="text-right">Price Per Share</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {transactionHistory
-                    .filter((transaction) => transaction.type === "Sell")
-                    .map((transaction) => (
-                      <TableRow key={transaction.id}>
-                        <TableCell>{transaction.date}</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="text-rose-500">
-                            {transaction.type}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="font-medium">{transaction.asset}</TableCell>
-                        <TableCell>{transaction.amount}</TableCell>
-                        <TableCell>{transaction.shares}</TableCell>
-                        <TableCell className="text-right">{transaction.price}</TableCell>
-                      </TableRow>
-                    ))}
                 </TableBody>
               </Table>
             </TabsContent>
           </Tabs>
         </CardContent>
       </Card>
+
+  
     </div>
   );
 }

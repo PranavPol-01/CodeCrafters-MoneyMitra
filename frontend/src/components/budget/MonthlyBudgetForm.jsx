@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -55,29 +55,58 @@ export default function MonthlyBudgetForm() {
   const remainingForSavings = budget.income - totalExpenses;
   const savingsPercentage = Math.round((remainingForSavings / budget.income) * 100);
 
-  const handleBudgetChange = (category, value) => {
-    setBudget((prev) => ({
-      ...prev,
-      [category]: value,
-      savings: category === "savings" ? value : remainingForSavings,
-    }));
-  };
+  // const handleBudgetChange = (category, value) => {
+  //   setBudget((prev) => ({
+  //     ...prev,
+  //     [category]: value,
+  //     savings: category === "savings" ? value : remainingForSavings,
+  //   }));
+  // };
 
-  // Inside your React component (e.g., MonthlyBudgetForm.js)
+  // Fetch budget data when the component mounts
+  useEffect(() => {
+    const fetchData = async () => {
+      const userId = sessionStorage.getItem('uid');
+      if (userId) {
+        await fetchBudget(new Date().toLocaleString('default', { year: 'numeric', month: '2-digit' }));
+      }
+    };
+    fetchData();
+  }, []);
+  const handleBudgetChange = (category, value) => {
+    setBudget((prev) => {
+      const updatedBudget = {
+        ...prev,
+        [category]: value,
+      };
+  
+      // Recalculate savings
+      const totalExpenses = Object.entries(updatedBudget)
+        .filter(([key]) => key !== "income" && key !== "savings")
+        .reduce((sum, [_, value]) => sum + value, 0);
+  
+      updatedBudget.savings = updatedBudget.income - totalExpenses;
+  
+      return updatedBudget;
+    });
+  };
 
   const saveBudget = async () => {
     try {
       const userId = sessionStorage.getItem('uid');
-
+  
       if (!userId) {
         console.error("User ID not found in session storage.");
-        return; // Or handle the missing userId appropriately
+        return;
       }
-
+  
+      const now = new Date();
+      const timestamp = now.toISOString(); // ISO format for Firestore
+      const month_year = now.toLocaleString('default', { year: 'numeric', month: '2-digit' }); // Format: "2023-10"
+  
       const budgetData = {
-        userId: userId,  // Include userId in the body
+        userId: userId,
         income: budget.income,
-       
         stocks: budget.stocks,
         bonds: budget.bonds,
         mutualFunds: budget.mutualFunds,
@@ -86,22 +115,27 @@ export default function MonthlyBudgetForm() {
         fixedDeposits: budget.fixedDeposits,
         gold: budget.gold,
         emi: budget.emi,
-        savings: remainingForSavings
+        savings: remainingForSavings,
+        timestamp: timestamp, // Add timestamp
+        month_year: month_year // Add month_year
       };
-
-      const response = await fetch('api/budget/create', {  // Replace with your Flask server URL
+      console.log(budgetData);
+  
+      const response = await fetch('/api/budget/create', { // Use /api/budget/create
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(budgetData)
       });
-
+  
+      console.log(response);
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to save budget');
       }
-
+  
       console.log('Budget saved successfully');
     } catch (error) {
       console.error("Error saving budget:", error);
@@ -110,83 +144,160 @@ export default function MonthlyBudgetForm() {
 
 
 
-const fetchBudget = async () => {
+// const fetchBudget = async () => {
+//   try {
+//       const userId = sessionStorage.getItem('userId');
+
+//       if (!userId) {
+//           console.error("User ID not found in session storage.");
+//           return; // Or handle the missing userId appropriately
+//       }
+
+//       const requestData = { userId: userId };  // Send userId in the body
+
+//       const response = await fetch('http://localhost:5000/budget/get', {  // Replace with your Flask server URL
+//           method: 'POST',
+//           headers: {
+//               'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify(requestData)  // Send it as JSON
+//       });
+
+//       if (!response.ok) {
+//           const errorData = await response.json();
+//           throw new Error(errorData.error || 'Failed to fetch budget');
+//       }
+
+//       const budgetData = await response.json();
+//       setBudget(budgetData); // Update the budget state with fetched data
+//       console.log('Budget fetched successfully:', budgetData);
+
+//   } catch (error) {
+//       console.error("Error fetching budget:", error);
+//   }
+// };
+const fetchBudget = async (monthYear) => {
   try {
-      const userId = sessionStorage.getItem('userId');
+    const userId = sessionStorage.getItem('uid');
 
-      if (!userId) {
-          console.error("User ID not found in session storage.");
-          return; // Or handle the missing userId appropriately
-      }
+    if (!userId) {
+      console.error("User ID not found in session storage.");
+      return;
+    }
 
-      const requestData = { userId: userId };  // Send userId in the body
+    const requestData = { userId: userId, month_year: monthYear }; // Include month_year in the request
 
-      const response = await fetch('/api/budget/get', {  // Replace with your Flask server URL
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestData)  // Send it as JSON
-      });
+    const response = await fetch('/api/budget/get', { // Use /api/budget/get
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData)
+    });
 
-      if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to fetch budget');
-      }
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to fetch budget');
+    }
 
-      const budgetData = await response.json();
-      setBudget(budgetData); // Update the budget state with fetched data
-      console.log('Budget fetched successfully:', budgetData);
+    const budgetData = await response.json();
+    setBudget(budgetData); // Update the budget state with fetched data
+    console.log('Budget fetched successfully:', budgetData);
 
   } catch (error) {
-      console.error("Error fetching budget:", error);
+    console.error("Error fetching budget:", error);
   }
 };
 
 
+// const updateBudget = async () => {
+//   try {
+//       const userId = sessionStorage.getItem('userId');
 
+//       if (!userId) {
+//           console.error("User ID not found in session storage.");
+//           return; // Or handle the missing userId appropriately
+//       }
+
+//       const budgetData = {
+//           userId: userId,  // Include userId in the body
+//           income: budget.income,
+//           stocks: budget.stocks,
+//           bonds: budget.bonds,
+//           mutualFunds: budget.mutualFunds,
+//           realEstate: budget.realEstate,
+//           crypto: budget.crypto,
+//           fixedDeposits: budget.fixedDeposits,
+//           gold: budget.gold,
+//           emi: budget.emi,
+//           savings: remainingForSavings
+//       };
+
+//       const response = await fetch('api/budget/update', {  // Replace with your Flask server URL
+//           method: 'PUT',
+//           headers: {
+//               'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify(budgetData)
+//       });
+
+//       if (!response.ok) {
+//           const errorData = await response.json();
+//           throw new Error(errorData.error || 'Failed to update budget');
+//       }
+
+//       console.log('Budget updated successfully');
+//   } catch (error) {
+//       console.error("Error updating budget:", error);
+//   }
+// };
 const updateBudget = async () => {
   try {
-      const userId = sessionStorage.getItem('userId');
+    const userId = sessionStorage.getItem('userId');
 
-      if (!userId) {
-          console.error("User ID not found in session storage.");
-          return; // Or handle the missing userId appropriately
-      }
+    if (!userId) {
+      console.error("User ID not found in session storage.");
+      return;
+    }
 
-      const budgetData = {
-          userId: userId,  // Include userId in the body
-          income: budget.income,
-          stocks: budget.stocks,
-          bonds: budget.bonds,
-          mutualFunds: budget.mutualFunds,
-          realEstate: budget.realEstate,
-          crypto: budget.crypto,
-          fixedDeposits: budget.fixedDeposits,
-          gold: budget.gold,
-          emi: budget.emi,
-          savings: remainingForSavings
-      };
+    const now = new Date();
+    const timestamp = now.toISOString(); // ISO format for Firestore
+    const month_year = now.toLocaleString('default', { year: 'numeric', month: '2-digit' }); // Format: "2023-10"
 
-      const response = await fetch('api/budget/update', {  // Replace with your Flask server URL
-          method: 'PUT',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(budgetData)
-      });
+    const budgetData = {
+      userId: userId,
+      income: budget.income,
+      stocks: budget.stocks,
+      bonds: budget.bonds,
+      mutualFunds: budget.mutualFunds,
+      realEstate: budget.realEstate,
+      crypto: budget.crypto,
+      fixedDeposits: budget.fixedDeposits,
+      gold: budget.gold,
+      emi: budget.emi,
+      savings: remainingForSavings,
+      timestamp: timestamp, // Add timestamp
+      month_year: month_year // Add month_year
+    };
 
-      if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to update budget');
-      }
+    const response = await fetch('api/budget/update', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(budgetData)
+    });
 
-      console.log('Budget updated successfully');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to update budget');
+    }
+
+    console.log('Budget updated successfully');
   } catch (error) {
-      console.error("Error updating budget:", error);
+    console.error("Error updating budget:", error);
   }
 };
-
 
   const pieData = [
    
@@ -433,23 +544,23 @@ const updateBudget = async () => {
               </div>
             </TabsContent>
             <TabsContent value="list" className="pt-4">
-              <div className="space-y-3">
-                {pieData.map((item) => (
-                  <div key={item.name} className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
-                    <div className="flex items-center gap-2">
-                      <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} />
-                      <span className="text-sm">{item.name}</span>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <span className="font-medium">${item.value}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {Math.round((item.value / budget.income) * 100)}%
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
+  <div className="space-y-3">
+    {pieData.map((item) => (
+      <div key={item.name} className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+        <div className="flex items-center gap-2">
+          <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} />
+          <span className="text-sm">{item.name}</span>
+        </div>
+        <div className="flex flex-col items-end">
+          <span className="font-medium">${item.value}</span>
+          <span className="text-xs text-muted-foreground">
+            {Math.round((item.value / budget.income) * 100)}%
+          </span>
+        </div>
+      </div>
+    ))}
+  </div>
+</TabsContent>
           </Tabs>
 
           <div className="mt-6 p-3 bg-muted/50 rounded-lg flex items-start gap-2">
