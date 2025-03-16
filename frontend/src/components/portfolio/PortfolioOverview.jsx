@@ -1,67 +1,216 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 
-const portfolioHistory = [
-  { date: "2024-09-15", value: 15000 },
-  { date: "2024-10-15", value: 15200 },
-  { date: "2024-11-15", value: 15800 },
-  { date: "2024-12-15", value: 16500 },
-  { date: "2025-01-15", value: 17200 },
-  { date: "2025-02-15", value: 18500 },
-  { date: "2025-03-15", value: 24685 },
-];
+const PortfolioOverview = () => {
+  const [bonds, setBonds] = useState([]);
+  const [mutualFunds, setMutualFunds] = useState([]);
+  const [sips, setSips] = useState([]);
+  const [budget, setBudget] = useState({});
+  const uid = sessionStorage.getItem("uid");
 
-const assetAllocation = [
-  { name: "Stocks", value: 45, color: "#0ea5e9" },
-  { name: "Bonds", value: 20, color: "#8b5cf6" },
-  { name: "Crypto", value: 15, color: "#f43f5e" },
-  { name: "Real Estate", value: 10, color: "#10b981" },
-  { name: "Gold", value: 5, color: "#f59e0b" },
-  { name: "Cash", value: 5, color: "#6b7280" },
-];
+  // Fetch all data
+  useEffect(() => {
+    fetchBonds();
+    fetchMutualFunds();
+    fetchSips();
+    fetchBudget();
+  }, []);
 
-export default function PortfolioOverview() {
+  const fetchBonds = async () => {
+    try {
+      const response = await fetch(`/api/savings/getbonds/${uid}`);
+      if (!response.ok) throw new Error("Failed to fetch bonds");
+      const data = await response.json();
+      setBonds(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching bonds:", error);
+    }
+  };
+
+  const fetchMutualFunds = async () => {
+    try {
+      const response = await fetch(`/api/savings/getmf/${uid}`);
+      if (!response.ok) throw new Error("Failed to fetch mutual funds");
+      const data = await response.json();
+      setMutualFunds(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching mutual funds:", error);
+    }
+  };
+
+  const fetchSips = async () => {
+    try {
+      const response = await fetch(`/api/savings/getsip/${uid}`);
+      if (!response.ok) throw new Error("Failed to fetch SIPs");
+      const data = await response.json();
+      setSips(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching SIPs:", error);
+    }
+  };
+
+  const fetchBudget = async () => {
+    try {
+      const response = await fetch("/api/budget/get", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: uid }),
+      });
+      if (!response.ok) throw new Error("Failed to fetch budget");
+      const data = await response.json();
+      setBudget(data);
+    } catch (error) {
+      console.error("Error fetching budget:", error);
+    }
+  };
+
+  // Data for graphs
+  const bondData = bonds.map((bond) => ({
+    name: bond.bondName,
+    value: parseFloat(bond.amount),
+  }));
+
+  const mutualFundData = mutualFunds.map((mf) => ({
+    name: mf.fundName,
+    value: parseFloat(mf.amount),
+  }));
+
+  const sipData = sips.map((sip) => ({
+    name: `SIP - ${sip.fundName}`,
+    value: parseFloat(sip.amount),
+  }));
+
+  // Asset Allocation Data
+  const assetAllocationData = [
+    { name: "Bonds", value: bonds.reduce((sum, bond) => sum + parseFloat(bond.amount), 0) },
+    { name: "Mutual Funds", value: mutualFunds.reduce((sum, mf) => sum + parseFloat(mf.amount), 0) },
+    { name: "SIPs", value: sips.reduce((sum, sip) => sum + parseFloat(sip.amount), 0) },
+  ];
+
+  // Budget Utilization Data
+  const budgetUtilizationData = [
+    { name: "Income", value: parseFloat(budget.income) },
+    { name: "Savings", value: parseFloat(budget.savings) },
+    { name: "Expenses", value: parseFloat(budget.income) - parseFloat(budget.savings) },
+  ];
+
+  // Total Portfolio Value
+  const totalPortfolioValue = assetAllocationData.reduce((sum, asset) => sum + asset.value, 0);
+
+  // Colors for black, white, and grey theme
+  const colors = ["#000000", "#4D4D4D", "#A6A6A6"];
+
+
   return (
-    <div className="grid gap-4 md:grid-cols-7">
-      <Card className="md:col-span-4">
+    <div className="p-4">
+      {/* Total Portfolio Value */}
+      <Card className="mb-4">
         <CardHeader>
-          <CardTitle>Portfolio Performance</CardTitle>
-          <CardDescription>Track your investment growth over time</CardDescription>
+          <CardTitle>Total Portfolio Value</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={portfolioHistory}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="value" stroke="#8884d8" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
+          <h3 className="text-2xl font-bold">₹{totalPortfolioValue.toFixed(2)}</h3>
         </CardContent>
       </Card>
 
-      <Card className="md:col-span-3">
+      {/* Asset Allocation Pie Chart */}
+      <Card className="mb-4">
         <CardHeader>
           <CardTitle>Asset Allocation</CardTitle>
-          <CardDescription>Breakdown of your investment by asset class</CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie data={assetAllocation} dataKey="value" nameKey="name" outerRadius={100} label>
-                {assetAllocation.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          <PieChart width={400} height={300}>
+            <Pie
+              data={assetAllocationData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              fill="#8884d8"
+              label
+            >
+              {assetAllocationData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend />
+          </PieChart>
+        </CardContent>
+      </Card>
+
+      {/* Budget Utilization Bar Chart */}
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle>Budget Utilization</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <BarChart width={400} height={300} data={budgetUtilizationData}>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="value" fill="#808080" />
+          </BarChart>
+        </CardContent>
+      </Card>
+
+      {/* Statistical Tables */}
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle>Statistical Data</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Category</TableHead>
+                <TableHead>Total Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>Bonds</TableCell>
+                <TableCell>₹{bonds.reduce((sum, bond) => sum + parseFloat(bond.amount), 0)}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Mutual Funds</TableCell>
+                <TableCell>₹{mutualFunds.reduce((sum, mf) => sum + parseFloat(mf.amount), 0)}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>SIPs</TableCell>
+                <TableCell>₹{sips.reduce((sum, sip) => sum + parseFloat(sip.amount), 0)}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Budget Overview */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Budget Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h3 className="text-lg font-semibold">Income</h3>
+              <p>₹{budget.income}</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">Savings</h3>
+              <p>₹{budget.savings}</p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
   );
-}
+};
+
+export default PortfolioOverview;
