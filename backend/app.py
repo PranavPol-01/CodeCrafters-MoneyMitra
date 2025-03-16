@@ -23,7 +23,6 @@ app.register_blueprint(stock_routes)
 app.register_blueprint(user_routes)
 app.register_blueprint(budget_bp)
 
-    
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Render provides PORT env variable
     app.run(host='0.0.0.0', port=port)
