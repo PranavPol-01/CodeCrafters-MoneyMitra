@@ -13,7 +13,8 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:5000", // Replace with your API base URL
+        // target: "http://127.0.0.1:5000", // Replace with your API base URL
+        target:"https://codecrafters-yndf.onrender.com",
         changeOrigin: true, // Ensures the host header matches the target
         secure: false, // Set to true if using HTTPS with valid SSL
         rewrite: (path) => path.replace(/^\/api/, ""), // Remove "/api" prefix in requests

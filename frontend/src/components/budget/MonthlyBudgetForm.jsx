@@ -121,7 +121,7 @@ const fetchBudget = async () => {
 
       const requestData = { userId: userId };  // Send userId in the body
 
-      const response = await fetch('http://localhost:5000/budget/get', {  // Replace with your Flask server URL
+      const response = await fetch('/api/budget/get', {  // Replace with your Flask server URL
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
