@@ -74,6 +74,11 @@ const Sidebar = () => {
       path: "/report",
     },
     {
+      label: "About Tax",
+      icon: <BarChart className="h-5 w-5" />,
+      path: "/tax",
+    },
+    {
       label: "Settings",
       icon: <Settings className="h-5 w-5" />,
       path: "/settings",

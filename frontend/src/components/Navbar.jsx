@@ -37,6 +37,12 @@ const Navbar = () => {
             Home
           </Link>
           <Link
+            to="/tax"
+            className="block text-white transition duration-200 hover:text-gray-300"
+          >
+            About Taxes
+          </Link>
+          <Link
             to="/help"
             className="text-white transition duration-200 hover:text-gray-300"
           >
@@ -66,6 +72,12 @@ const Navbar = () => {
               >
                 Profile
               </Link>
+              {/* <Link
+                to="/tax"
+                className="block text-white transition duration-200 hover:text-gray-300"
+              >
+                About Taxes
+              </Link> */}
               <button
                 onClick={handleLogout}
                 className="text-white transition duration-200 hover:text-gray-300 border-2 border-white py-2 px-4 rounded-md hover:bg-gray-700 transform transition-all duration-300"
@@ -75,6 +87,12 @@ const Navbar = () => {
             </>
           ) : (
             <>
+              <Link
+                to="/tax"
+                className="block text-white transition duration-200 hover:text-gray-300"
+              >
+                About Taxes
+              </Link>
               <Link
                 to="/login"
                 className="text-white transition duration-200 hover:text-gray-300 border-2 border-white py-2 px-4 rounded-md hover:bg-gray-700 transform transition-all duration-300"
@@ -156,6 +174,12 @@ const Navbar = () => {
             >
               Profile
             </Link>
+            <Link
+              to="/tax"
+              className="block text-white transition duration-200 hover:text-gray-300"
+            >
+              About Taxes
+            </Link>
             <button
               onClick={handleLogout}
               className="block text-white transition duration-200 hover:text-gray-300"
@@ -165,6 +189,12 @@ const Navbar = () => {
           </>
         ) : (
           <>
+            <Link
+              to="/tax"
+              className="block text-white transition duration-200 hover:text-gray-300"
+            >
+              About Taxes
+            </Link>
             <Link
               to="/login"
               className="block text-white transition duration-200 hover:text-gray-300"
