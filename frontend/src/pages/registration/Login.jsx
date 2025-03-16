@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("User"); // Default role is User
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,10 +22,14 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
+        // If role is not found in DB, default to "User"
+        const userRole = data.user.role || "User";
+
         // Store login details in session storage
         sessionStorage.setItem("email", data.user.email);
         sessionStorage.setItem("username", data.user.username);
         sessionStorage.setItem("uid", data.user.uid);
+        sessionStorage.setItem("role", userRole);
 
         alert("Login successful!");
         navigate("/dashboard");
@@ -66,6 +71,19 @@ const Login = () => {
               placeholder="Password"
               required
             />
+
+            {/* Role Selection Dropdown */}
+            {/* <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="User">User</option>
+              <option value="Admin">Admin</option>
+              <option value="Advisor">Advisor</option>
+            </select> */}
+
             <button
               type="submit"
               className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-300"

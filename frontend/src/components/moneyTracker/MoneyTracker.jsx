@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Papa from "papaparse"; // Import papaparse for CSV conversion
 
 const API_URL = "http://127.0.0.1:5000/transactions";
 
@@ -224,6 +225,36 @@ const MoneyTracker = () => {
     setIsEditing(false);
   };
 
+  // Function to export transactions as CSV
+  const exportToCSV = () => {
+    if (transactions.length === 0) {
+      setError("No transactions to export.");
+      return;
+    }
+
+    // Prepare CSV data
+    const csvData = transactions.map((transaction) => ({
+      Description: transaction.description,
+      Category: transaction.category,
+      Amount: `₹${transaction.amount}`,
+      Date: transaction.date,
+      Time: transaction.time,
+    }));
+
+    // Convert to CSV
+    const csv = Papa.unparse(csvData, {
+      header: true, // Include headers in the CSV
+    });
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "transactions.csv";
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
   return (
     <div className="grid gap-4 md:grid-cols-7">
       <Card className="md:col-span-7">
@@ -238,6 +269,7 @@ const MoneyTracker = () => {
               </p>
             </div>
             <div className="mt-4 md:mt-0 space-x-2">
+              <Button onClick={exportToCSV}>Export CSV</Button>
               <Button>View Details</Button>
             </div>
           </div>

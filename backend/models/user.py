@@ -5,10 +5,11 @@ from datetime import datetime
 import yfinance as yf
 
 class User:
-    def __init__(self, uid, email, username):
+    def __init__(self, uid, email, username, role="User"):
         self.uid = uid
         self.email = email
         self.username = username
+        self.role = role  # Default role is "User"
 
     @staticmethod
     def hash_password(password):
@@ -21,7 +22,7 @@ class User:
         return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
 
     @staticmethod
-    def create_user(email, password, username):
+    def create_user(email, password, username, role):
         try:
             # Validate inputs
             if not email or not isinstance(email, str):
@@ -30,6 +31,12 @@ class User:
                 return {"error": "Password is required and must be a string"}, 400
             if not username or not isinstance(username, str):
                 return {"error": "Username is required and must be a string"}, 400
+            if not role or not isinstance(role, str):
+                role="User"
+            # Ensure role is valid
+            valid_roles = ["User", "Admin", "Advisor"]
+            if role not in valid_roles:
+                return {"error": "Invalid role. Must be 'User', 'Admin', or 'Advisor'"}, 400
 
             # Check if user already exists
             user_ref = db.collection("users").where("email", "==", email).stream()
@@ -45,8 +52,10 @@ class User:
                 "uid": uid,
                 "email": email,
                 "username": username,
-                "password": hashed_password
+                "password": hashed_password,
+                "role": role  # Store role in Firebase
             }
+            
             db.collection("users").document(uid).set(user_data)
 
             # Initialize user document in the trading collection
@@ -57,19 +66,19 @@ class User:
             }
             db.collection("trading").document(uid).set(trading_data)
 
-            return {"message": "User registered successfully!", "uid": uid}, 201
+            return {"message": "User registered successfully!", "uid": uid, "role": role}, 201
         except Exception as e:
             return {"error": str(e)}, 400
 
     @staticmethod
     def authenticate_user(email, password):
+        
         try:
             # Validate inputs
             if not email or not isinstance(email, str):
                 return {"error": "Email is required and must be a string"}, 400
             if not password or not isinstance(password, str):
                 return {"error": "Password is required and must be a string"}, 400
-
             # Fetch user data
             user_ref = db.collection("users").where("email", "==", email).stream()
             user_doc = next(user_ref, None)
@@ -77,13 +86,15 @@ class User:
             if user_doc:
                 user_data = user_doc.to_dict()
                 stored_password = user_data.get("password", "")
+                stored_role = user_data.get("role", "User")  # Default to "User" if missing
 
                 if User.check_password(password, stored_password):
                     # Return only login-related data
                     login_data = {
                         "uid": user_data.get("uid"),
                         "email": user_data.get("email"),
-                        "username": user_data.get("username")
+                        "username": user_data.get("username"),
+                        "role": stored_role  # Return role in response
                     }
                     return {"message": "Login successful", "user": login_data}, 200
                 else:

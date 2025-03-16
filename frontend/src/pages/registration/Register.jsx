@@ -11,6 +11,7 @@ const Signup = () => {
     aadhaarId: "",
     panNumber: "",
     dob: "",
+    role: "User", // Default role
   });
 
   const [error, setError] = useState("");
@@ -36,6 +37,7 @@ const Signup = () => {
       aadhaarId: formData.aadhaarId,
       panNumber: formData.panNumber,
       dob: formData.dob,
+      role: formData.role, // Include role in payload
     };
 
     try {
@@ -58,6 +60,7 @@ const Signup = () => {
           aadhaarId: "",
           panNumber: "",
           dob: "",
+          role: "User",
         });
       } else {
         setError(data.error || "Registration failed");
@@ -130,6 +133,23 @@ const Signup = () => {
               required
               InputProps={{ startAdornment: <Gavel /> }}
             />
+            
+            {/* Role Selection Dropdown */}
+            <TextField
+              select
+              label="Select Role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+              required
+            >
+              <MenuItem value="User">User</MenuItem>
+              <MenuItem value="Admin">Admin</MenuItem>
+              <MenuItem value="Advisor">Advisor</MenuItem>
+            </TextField>
+
             <TextField
               label="Password"
               name="password"
