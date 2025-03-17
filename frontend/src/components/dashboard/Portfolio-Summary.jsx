@@ -13,14 +13,13 @@
 
 // const PortfolioSummary = () => {
 
-   
 //     const [expenseCategories, setExpenseCategories] = useState([]);
 //     const [monthlyTrends,setMonthlyTrends] = useState([]);
 //     const [topExpenses, setTopExpenses] = useState([]);
 //       const [categoryChanges, setCategoryChanges] = useState([]);
 //     const [loading, setLoading] = useState(true);
 //     const [error, setError] = useState(null);
-  
+
 //     // Color mapping for consistent colors across charts
 //     const categoryColors = {
 //       Stocks: "#06b6d4",
@@ -34,7 +33,7 @@
 //       Savings: "#22c55e",
 //       Other: "#94a3b8",
 //     };
-  
+
 //     useEffect(() => {
 //       const fetchData = async () => {
 //         setLoading(true);
@@ -45,14 +44,14 @@
 //             setLoading(false);
 //             return;
 //           }
-  
+
 //           // Fetch all data
 //           const monthlyResponse = await axios.get("http://localhost:5000/api/monthly-data", {
 //             headers: { Authorization: `Bearer ${token}` },
 //           });
 //           console.log("Monthly data:", monthlyResponse.data);
 //           setMonthlyTrends(monthlyResponse.data);
-  
+
 //           const budgetResponse = await axios.get("http://localhost:5000/api/budget-progress", {
 //             headers: { Authorization: `Bearer ${token}` },
 //           });
@@ -64,7 +63,7 @@
 //             percentage: ((item.spent / item.allocated) * 100).toFixed(1),
 //           }));
 //           setExpenseCategories(categoriesData);
-  
+
 //           const changesData = budgetResponse.data.map((item) => ({
 //             category: item.category,
 //             previousMonth: item.allocated * 0.9,
@@ -72,13 +71,13 @@
 //             change: `${(((item.spent - item.allocated) / item.allocated) * 100).toFixed(1)}%`,
 //           }));
 //           setCategoryChanges(changesData);
-  
+
 //           const transactionsResponse = await axios.get("http://localhost:5000/api/recent-transactions", {
 //             headers: { Authorization: `Bearer ${token}` },
 //           });
 //           console.log("Recent transactions:", transactionsResponse.data);
 //           setTopExpenses(transactionsResponse.data);
-  
+
 //           setLoading(false); // Set loading to false after all data is fetched
 //         } catch (error) {
 //           console.error("Error fetching data:", error);
@@ -86,10 +85,10 @@
 //           setLoading(false); // Set loading to false even if there's an error
 //         }
 //       };
-  
+
 //       fetchData();
 //     }, []);
-  
+
 //     if (loading) {
 //       return (
 //         <div className="flex justify-center items-center h-64">
@@ -100,7 +99,7 @@
 //         </div>
 //       );
 //     }
-  
+
 //     if (error) {
 //       return (
 //         <div className="bg-red-50 p-4 rounded-lg border border-red-200 text-red-700">
@@ -137,7 +136,7 @@
 //                  </PieChart>
 //                </ResponsiveContainer>
 //              </div>
-     
+
 //              <div className="grid grid-cols-2 gap-4">
 //         <h3 className="text-lg font-medium mb-4">Asset Allocation</h3>
 //         <div className="grid grid-cols-2 gap-4">
@@ -195,20 +194,26 @@ const PortfolioSummary = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const token = sessionStorage.getItem("uid");
-        if (!token) {
-          console.error("No token found in sessionStorage");
+        const user_id = sessionStorage.getItem("uid");
+        if (!user_id) {
+          console.error("No user_id found in sessionStorage");
           setLoading(false);
           return;
         }
 
-        // Fetch budget progress data
-        const budgetResponse = await axios.get("/api/budget-progress", {
-          headers: { Authorization: `Bearer ${token}` },
+        // Fetch budget progress data with user_id in headers
+        const response = await fetch("/api/budget-progress", {
+          headers: { user_id: user_id, Authorization: `Bearer ${user_id}` },
         });
 
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const budgetData = await response.json();
+        console.log("Budget data:", budgetData);
         // Process data for the pie chart
-        const categoriesData = budgetResponse.data.map((item) => ({
+        const categoriesData = budgetData.map((item) => ({
           name: item.category,
           value: item.spent,
           color: categoryColors[item.category] || "#94a3b8",
@@ -216,11 +221,11 @@ const PortfolioSummary = () => {
         }));
 
         setExpenseCategories(categoriesData);
-        setLoading(false); // Set loading to false after data is fetched
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load data.");
-        setLoading(false); // Set loading to false even if there's an error
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -286,7 +291,12 @@ const PortfolioSummary = () => {
           {expenseCategories.map((item) => (
             <div key={item.name} className="flex items-center gap-2">
               <div
-                style={{ backgroundColor: item.color, width: "10px", height: "10px", borderRadius: "50%" }}
+                style={{
+                  backgroundColor: item.color,
+                  width: "10px",
+                  height: "10px",
+                  borderRadius: "50%",
+                }}
               ></div>
               <div className="flex justify-between w-full">
                 <span className="text-sm">{item.name}</span>
@@ -301,7 +311,9 @@ const PortfolioSummary = () => {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm font-medium">Diversification Score</p>
-              <p className="text-xs text-gray-500">Your portfolio is well balanced</p>
+              <p className="text-xs text-gray-500">
+                Your portfolio is well balanced
+              </p>
             </div>
             <div className="text-2xl font-bold">8.5/10</div>
           </div>

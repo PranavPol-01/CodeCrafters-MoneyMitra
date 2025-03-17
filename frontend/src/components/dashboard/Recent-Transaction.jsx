@@ -7,26 +7,33 @@ const RecentTransactions = () => {
   const [error, setError] = useState(null);
   const [livePricesLoaded, setLivePricesLoaded] = useState(false);
 
-  // First effect to fetch initial transactions
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        // Get UID from sessionStorage
         const userId = sessionStorage.getItem("uid");
 
         if (!userId) {
           throw new Error("User ID not found in sessionStorage");
         }
 
-        // Fetch transactions from the API
-        const transactionsResponse = await fetch(`/api/transactions?uid=${userId}`);
-        if (!transactionsResponse.ok) {
+        const response = await fetch(`/api/transactions?uid=${userId}`);
+        if (!response.ok) {
           throw new Error("Failed to fetch transactions");
         }
 
-        const transactionsData = await transactionsResponse.json();
+        const transactionsData = await response.json();
+
+        if (
+          !transactionsData ||
+          !Array.isArray(transactionsData.transactions)
+        ) {
+          throw new Error("Invalid transactions data format");
+        }
+
+        console.log(transactionsData.transactions);
         setTransactions(transactionsData.transactions);
       } catch (err) {
+        console.error("Transaction Fetch Error:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -36,23 +43,28 @@ const RecentTransactions = () => {
     fetchTransactions();
   }, []);
 
-  // Separate effect to fetch live prices ONCE after transactions are loaded
   useEffect(() => {
     if (transactions.length === 0 || livePricesLoaded) return;
 
     const fetchLivePrices = async () => {
       try {
-        // Extract unique stock symbols from transactions
         const uniqueSymbols = [
-          ...new Set(transactions.map((t) => t.stock_symbol + ".NS")),
+          ...new Set(
+            transactions
+              .map((t) => t?.stock_symbol?.trim() + ".NS")
+              .filter(Boolean)
+          ),
         ];
 
-        // Fetch live stock prices
+        if (uniqueSymbols.length === 0) {
+          console.warn("No valid stock symbols found for live price fetch.");
+          setLivePricesLoaded(true);
+          return;
+        }
+
         const response = await fetch("/api/get_stock_prices", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ stock_symbols: uniqueSymbols }),
         });
 
@@ -61,18 +73,17 @@ const RecentTransactions = () => {
         }
 
         const data = await response.json();
-        const livePrices = data.stock_prices;
+        const livePrices = data?.stock_prices || {};
 
-        // Update transactions with live price and percentage change
         const updatedTransactions = transactions.map((transaction) => {
-          const livePrice = livePrices[transaction.stock_symbol + ".NS"];
-          const changePercent = livePrice
-            ? (
-                ((livePrice - transaction.price_per_share) /
-                  transaction.price_per_share) *
-                100
-              ).toFixed(2)
-            : "N/A";
+          const stockSymbol = transaction?.stock_symbol?.trim();
+          const livePrice = livePrices[stockSymbol + ".NS"] || null;
+          const pricePerShare = parseFloat(transaction?.price_per_share || 0);
+
+          const changePercent =
+            livePrice && pricePerShare
+              ? (((livePrice - pricePerShare) / pricePerShare) * 100).toFixed(2)
+              : "N/A";
 
           return {
             ...transaction,
@@ -81,40 +92,39 @@ const RecentTransactions = () => {
           };
         });
 
+        console.log(updatedTransactions);
         setTransactions(updatedTransactions);
-        setLivePricesLoaded(true); // Mark that we've loaded prices
       } catch (err) {
-        console.error("Error fetching live stock prices:", err);
-        setLivePricesLoaded(true); // Mark as loaded even on error to prevent retry loop
+        console.error("Live Prices Fetch Error:", err);
+      } finally {
+        setLivePricesLoaded(true);
       }
     };
 
     fetchLivePrices();
   }, [transactions, livePricesLoaded]);
 
-  if (loading) {
-    return <div>Loading transactions...</div>;
-  }
+  if (loading) return <div>Loading transactions...</div>;
+  if (error) return <div>Error: {error}</div>;
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  // Map the API response to the expected structure
   const mappedTransactions = transactions.map((transaction) => ({
-    id: transaction.stock_symbol + transaction.timestamp, // Unique ID for each transaction
-    asset: transaction.stock_symbol,
-    type: transaction.type,
-    amount: `Rs ${transaction.total_cost.toFixed(2)}`,
-    shares: transaction.quantity.toFixed(2),
-    date: new Date(transaction.timestamp).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }),
+    id: transaction?.stock_symbol + transaction?.timestamp || "unknown",
+    asset: transaction?.stock_symbol || "Unknown Asset",
+    type: transaction?.type || "Unknown",
+    amount: `Rs ${(transaction?.total_cost || 0).toFixed(2)}`,
+    shares: (transaction?.quantity || 0).toFixed(2),
+    date:
+      transaction?.timestamp &&
+      !isNaN(new Date(transaction.timestamp).getTime())
+        ? new Date(transaction.timestamp).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })
+        : "Invalid Date",
     status: "completed",
-    change: `${transaction.changePercent || '0.00'}%`,
-    isPositive: parseFloat(transaction.changePercent || 0) >= 0,
+    change: `${transaction?.changePercent || "0.00"}%`,
+    isPositive: parseFloat(transaction?.changePercent || "0") >= 0,
   }));
 
   return (
@@ -153,7 +163,8 @@ const RecentTransactions = () => {
               <div className="flex flex-col">
                 {transaction.amount}
                 <span className="text-xs text-gray-500">
-                  {transaction.shares} {transaction.shares === "1.00" ? "share" : "shares"}
+                  {transaction.shares}{" "}
+                  {transaction.shares === "1.00" ? "share" : "shares"}
                 </span>
               </div>
             </td>

@@ -91,7 +91,7 @@ app.register_blueprint(advisor_bp)
 #         return jsonify(list(monthly_data.values())), 200
 #     except Exception as e:
 #         return jsonify({"error": str(e)}), 500
-@app.route('/api/monthly-data', methods=['GET'])
+@app.route('/monthly-data', methods=['GET'])
 @require_auth
 def get_monthly_data():
     try:
@@ -151,9 +151,7 @@ def get_monthly_data():
 def get_budget_progress():
     try:
         user_id = request.user_id
-        # print(f"Fetching budget progress for user: {user_id}")
 
-        # Define the mapping from field names to category names
         category_mapping = {
             "stocks": "Stocks",
             "bonds": "Bonds", 
@@ -165,93 +163,70 @@ def get_budget_progress():
             "emi": "EMI",
             "savings": "Savings"
         }
-        
         valid_categories = list(category_mapping.values()) + ["Other"]
 
-        # Get the current month and year
         current_date = datetime.now()
         current_month_year = current_date.strftime("%Y-%m")
         current_month = current_date.month
         current_year = current_date.year
-        print(f"Current month_year: {current_month_year}")
 
-        # Query budget allocations for the current month
         budgets_query = db.collection('budgets').where('userId', '==', user_id).where('month_year', '==', current_month_year)
         budgets_snapshot = budgets_query.get()
-
-        print(f"Budgets snapshot count: {len(budgets_snapshot)}")
         budgets_data = {}
 
-        # Use the first budget document (or merge them if needed)
         if budgets_snapshot:
-            budget_dict = budgets_snapshot[0].to_dict()
-            print(f"Budget document: {budget_dict}")
-            
-            # Map the fields to categories
-            for field, category in category_mapping.items():
-                if field in budget_dict:
-                    budgets_data[category] = budget_dict.get(field, 0)
+            budget_dict = budgets_snapshot[0].to_dict() if budgets_snapshot[0] else {}
 
-        # Query expenses for the current month
-        # First try with month_year field if it exists
+            for field, category in category_mapping.items():
+                budgets_data[category] = budget_dict.get(field, 0) or 0  
+
         expenses_data = {}
-        
-        # Try with month_year field
+
         expenses_query = db.collection('expenses').where('userId', '==', user_id).where('month_year', '==', current_month_year)
         expenses_snapshot = expenses_query.get()
-        
-        # If no results, try with date field parsing
+
         if len(expenses_snapshot) == 0:
-            # print("No expenses found with month_year field, trying with date field")
             expenses_query = db.collection('expenses').where('userId', '==', user_id)
             all_expenses = expenses_query.get()
             
             expenses_snapshot = []
             for expense in all_expenses:
-                expense_dict = expense.to_dict()
-                if 'date' in expense_dict:
-                    try:
-                        # Parse the date string - adapt format as needed
-                        expense_date = datetime.strptime(expense_dict['date'], "%Y-%m-%d")
-                        # Check if it's the current month and year
-                        if expense_date.month == current_month and expense_date.year == current_year:
-                            expenses_snapshot.append(expense)
-                    except ValueError:
-                        print(f"Could not parse date: {expense_dict['date']}")
-                elif 'timestamp' in expense_dict and isinstance(expense_dict['timestamp'], str):
-                    try:
-                        # Try to parse timestamp if available
-                        expense_date = datetime.fromisoformat(expense_dict['timestamp'].replace('Z', '+00:00'))
-                        if expense_date.month == current_month and expense_date.year == current_year:
-                            expenses_snapshot.append(expense)
-                    except ValueError:
-                        print(f"Could not parse timestamp: {expense_dict['timestamp']}")
-
-        print(f"Expenses snapshot count: {len(expenses_snapshot)}")
+                try:
+                    expense_dict = expense.to_dict()
+                    expense_date = None
+                    
+                    if 'date' in expense_dict:
+                        try:
+                            expense_date = datetime.strptime(expense_dict['date'], "%Y-%m-%d")
+                        except ValueError:
+                            pass
+                    elif 'timestamp' in expense_dict:
+                        try:
+                            expense_date = datetime.fromisoformat(expense_dict['timestamp'].replace('Z', '+00:00'))
+                        except ValueError:
+                            pass
+                    
+                    if expense_date and expense_date.month == current_month and expense_date.year == current_year:
+                        expenses_snapshot.append(expense)
+                except Exception as e:
+                    print(f"Skipping corrupted expense record: {e}")
+                    continue  
 
         for expense in expenses_snapshot:
-            expense_dict = expense.to_dict()
-            # print(f"Expense document: {expense_dict}")
+            try:
+                expense_dict = expense.to_dict()
+                category = expense_dict.get('category', 'Other')
 
-            category = expense_dict.get('category', 'Other')
-            # Ensure category matches our expected format (first letter capitalized)
-            if category and category not in valid_categories:
-                # Try to find a match ignoring case
-                for valid_cat in valid_categories:
-                    if valid_cat.lower() == category.lower():
-                        category = valid_cat
-                        break
-                else:
-                    category = 'Other'
-                    
-            amount = expense_dict.get('amount', 0)
+                if category not in valid_categories:
+                    category = next((valid_cat for valid_cat in valid_categories if valid_cat.lower() == category.lower()), 'Other')
 
-            if category in expenses_data:
-                expenses_data[category] += amount
-            else:
-                expenses_data[category] = amount
+                amount = expense_dict.get('amount', 0) or 0  
 
-        # Prepare the budget progress response
+                expenses_data[category] = expenses_data.get(category, 0) + amount
+            except Exception as e:
+                print(f"Skipping invalid expense record: {e}")
+                continue  
+
         budget_progress = []
         for category in valid_categories:
             allocated = budgets_data.get(category, 0)
@@ -265,46 +240,53 @@ def get_budget_progress():
                 'percentage': percentage,
             })
 
-        print(f"Final Budget progress data: {budget_progress}")
         return jsonify(budget_progress), 200
+
     except Exception as e:
         print(f"Error in get_budget_progress: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "An unexpected error occurred"}), 500
 
 
-    
-@app.route('/api/recent-transactions', methods=['GET'])
+@app.route('/recent-transactions', methods=['GET'])
 @require_auth
 def get_recent_transactions():
     try:
-        user_id = request.user_id  # Get user_id from the request context
-        # print(f"Fetching recent transactions for user: {user_id}")
+        user_id = request.user_id
 
-        # Query expenses collection
         expenses_query = db.collection('expenses').where('userId', '==', user_id)
         expenses_snapshot = expenses_query.order_by('timestamp', direction='DESCENDING').limit(5).get()
-        print(f"Found {len(expenses_snapshot)} expenses")
 
         recent_transactions = []
         for expense in expenses_snapshot:
-            expense_data = expense.to_dict()
-            print(f"Processing expense: {expense.id}")
             try:
-                recent_transactions.append({
+                expense_data = expense.to_dict()
+
+                transaction = {
                     'id': expense.id,
-                    'description': expense_data.get('description', ''),
+                    'description': expense_data.get('description', 'No description'),
                     'category': expense_data.get('category', 'Other'),
-                    'amount': expense_data.get('amount', 0),
-                    'date': datetime.fromisoformat(expense_data.get('timestamp')).strftime("%b %d, %Y"),
-                })
+                    'amount': expense_data.get('amount', 0) or 0,
+                    'date': "N/A"
+                }
+
+                timestamp = expense_data.get('timestamp')
+                if timestamp:
+                    try:
+                        transaction['date'] = datetime.fromisoformat(timestamp.replace('Z', '+00:00')).strftime("%b %d, %Y")
+                    except ValueError:
+                        pass  
+
+                recent_transactions.append(transaction)
+
             except Exception as e:
-                print(f"Error processing expense {expense.id}: {e}")
-                continue
+                print(f"Skipping invalid expense record {expense.id}: {e}")
+                continue  
 
         return jsonify(recent_transactions), 200
+
     except Exception as e:
         print(f"Error in get_recent_transactions: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "An unexpected error occurred"}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Render provides PORT env variable

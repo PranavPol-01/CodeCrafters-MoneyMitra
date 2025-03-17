@@ -53,13 +53,13 @@ const ExpenseAnalytics = () => {
         }
 
         // Fetch all data
-        const monthlyResponse = await axios.get("http://localhost:5000/api/monthly-data", {
+        const monthlyResponse = await axios.get("/api/monthly-data", {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log("Monthly data:", monthlyResponse.data);
         setMonthlyTrends(monthlyResponse.data);
 
-        const budgetResponse = await axios.get("http://localhost:5000/api/budget-progress", {
+        const budgetResponse = await axios.get("/api/budget-progress", {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log("Budget progress data:", budgetResponse.data);
@@ -79,7 +79,7 @@ const ExpenseAnalytics = () => {
         }));
         setCategoryChanges(changesData);
 
-        const transactionsResponse = await axios.get("http://localhost:5000/api/recent-transactions", {
+        const transactionsResponse = await axios.get("/api/recent-transactions", {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log("Recent transactions:", transactionsResponse.data);

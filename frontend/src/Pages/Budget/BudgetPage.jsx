@@ -305,7 +305,7 @@ const BudgetPage = () => {
         if (!token) return;
   
         try {
-          const response = await fetch("http://localhost:5000/api/monthly-data", {
+          const response = await fetch("/api/monthly-data", {
             headers: { Authorization: `Bearer ${token}` },
           });
           const data = await response.json();
@@ -331,7 +331,7 @@ const BudgetPage = () => {
       if (!token) return;
   
       try {
-        const response = await fetch("http://localhost:5000/api/monthly-data", {
+        const response = await fetch("/api/monthly-data", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();

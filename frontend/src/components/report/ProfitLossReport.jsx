@@ -274,8 +274,8 @@ export function ProfitLossReport() {
                     <TableHead>Date</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Asset</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Shares</TableHead>
+                    <TableHead>no. of shares</TableHead>
+                    {/* <TableHead>Shares</TableHead> */}
                     <TableHead className="text-right">Price Per Share</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -298,7 +298,7 @@ export function ProfitLossReport() {
                         </Badge>
                       </TableCell>
                       <TableCell className="font-medium">{transaction.stock_symbol}</TableCell>
-                      <TableCell>Rs {transaction.total_cost.toFixed(2)}</TableCell>
+                      {/* <TableCell>Rs {transaction.total_cost.toFixed(2)}</TableCell> */}
                       <TableCell>{transaction.quantity.toFixed(2)}</TableCell>
                       <TableCell className="text-right">Rs {transaction.price_per_share.toFixed(2)}</TableCell>
                     </TableRow>
