@@ -79,16 +79,16 @@ const Sidebar = () => {
       icon: <BarChart className="h-5 w-5" />,
       path: "/tax",
     },
-    {
-      label: "Settings",
-      icon: <Settings className="h-5 w-5" />,
-      path: "/settings",
-    },
-    {
-      label: "Help & Support",
-      icon: <HelpCircle className="h-5 w-5" />,
-      path: "/help",
-    },
+    // {
+    //   label: "Settings",
+    //   icon: <Settings className="h-5 w-5" />,
+    //   path: "/settings",
+    // },
+    // {
+    //   label: "Help & Support",
+    //   icon: <HelpCircle className="h-5 w-5" />,
+    //   path: "/help",
+    // },
     {
       label: "Money Tracker",
       icon: <User className="h-5 w-5" />,
