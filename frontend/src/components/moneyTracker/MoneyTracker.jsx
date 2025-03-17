@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import Papa from "papaparse"; // Import papaparse for CSV conversion
 
-const API_URL = "http://127.0.0.1:5000/transactions";
+const API_URL = "/api/transactions";
 
 const MoneyTracker = () => {
   const [transactions, setTransactions] = useState([]);
